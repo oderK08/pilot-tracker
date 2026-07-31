@@ -15,6 +15,7 @@ séparées par "|"), zippé, avec les colonnes SETTLEMENT DATE | CUSIP |
 SYMBOL | QUANTITY (FAILS) | DESCRIPTION | PRICE.
 """
 import io
+import os
 import zipfile
 from datetime import datetime, timedelta
 

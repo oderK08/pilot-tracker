@@ -1,0 +1,1802 @@
+[
+  {
+    "name_of_issuer": "ALPHABET INC",
+    "cusip": "02079K107",
+    "value_usd": 230331000,
+    "shares": 91900,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "ARK ETF TR",
+    "cusip": "00214Q104",
+    "value_usd": 30799000,
+    "shares": 235500,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "CARDINAL HEALTH INC",
+    "cusip": "14149Y108",
+    "value_usd": 48966000,
+    "shares": 857700,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "CORECIVIC INC",
+    "cusip": "21871N101",
+    "value_usd": 13611000,
+    "shares": 1300000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "CVS HEALTH CORP",
+    "cusip": "126650100",
+    "value_usd": 43831000,
+    "shares": 525300,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "DISCOVERY INC",
+    "cusip": "25470F302",
+    "value_usd": 24780000,
+    "shares": 855084,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "FACEBOOK INC",
+    "cusip": "30303M102",
+    "value_usd": 327265000,
+    "shares": 941200,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 17800000,
+    "shares": 2500000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "GOLDEN OCEAN GROUP LTD",
+    "cusip": "G39637205",
+    "value_usd": 7728000,
+    "shares": 700000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "ISHARES TR",
+    "cusip": "464287432",
+    "value_usd": 280472000,
+    "shares": 1943000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "KRAFT HEINZ CO",
+    "cusip": "500754106",
+    "value_usd": 58103000,
+    "shares": 1424800,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "MARINUS PHARMACEUTICALS INC",
+    "cusip": "56854Q200",
+    "value_usd": 11213000,
+    "shares": 625000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "MCKESSON CORP",
+    "cusip": "58155Q103",
+    "value_usd": 130502000,
+    "shares": 682400,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "OVINTIV INC",
+    "cusip": "69047Q102",
+    "value_usd": 18882000,
+    "shares": 600000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "PROSHARES TR",
+    "cusip": "74347B201",
+    "value_usd": 9718000,
+    "shares": 516100,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "SCORPIO TANKERS INC",
+    "cusip": "Y7542C130",
+    "value_usd": 13230000,
+    "shares": 600000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "SUNCOKE ENERGY INC",
+    "cusip": "86722A103",
+    "value_usd": 11173000,
+    "shares": 1564804,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "TESLA INC",
+    "cusip": "88160R101",
+    "value_usd": 731017000,
+    "shares": 1075500,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "VY GLOBAL GROWTH",
+    "cusip": "G9444H118",
+    "value_usd": 996000,
+    "shares": 550000,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "VY GLOBAL GROWTH",
+    "cusip": "G9444H100",
+    "value_usd": 1438000,
+    "shares": 144550,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "WALMART INC",
+    "cusip": "931142103",
+    "value_usd": 53390000,
+    "shares": 378600,
+    "report_date": "2021-06-30",
+    "filing_date": "2021-08-16"
+  },
+  {
+    "name_of_issuer": "CORECIVIC INC",
+    "cusip": "21871N101",
+    "value_usd": 3668000,
+    "shares": 412126,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "CVS HEALTH CORP",
+    "cusip": "126650100",
+    "value_usd": 16972000,
+    "shares": 200000,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 8656000,
+    "shares": 1158820,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "LOCKHEED MARTIN CORP",
+    "cusip": "539830109",
+    "value_usd": 10353000,
+    "shares": 30000,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "NOW INC",
+    "cusip": "67011P100",
+    "value_usd": 1148000,
+    "shares": 150000,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "SCYNEXIS INC",
+    "cusip": "811292200",
+    "value_usd": 922000,
+    "shares": 174030,
+    "report_date": "2021-09-30",
+    "filing_date": "2021-11-15"
+  },
+  {
+    "name_of_issuer": "AEA-BRIDGES IMPACT CORP",
+    "cusip": "G01046104",
+    "value_usd": 9991000,
+    "shares": 1000100,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "BRISTOL-MYERS SQUIBB CO",
+    "cusip": "110122108",
+    "value_usd": 18705000,
+    "shares": 300000,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "CORECIVIC INC",
+    "cusip": "21871N101",
+    "value_usd": 5538000,
+    "shares": 555427,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "FIDELITY NATIONAL FINANCIAL",
+    "cusip": "31620R303",
+    "value_usd": 16959000,
+    "shares": 325000,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "GENERAL DYNAMICS CORP",
+    "cusip": "369550108",
+    "value_usd": 16678000,
+    "shares": 80000,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 6588000,
+    "shares": 850000,
+    "report_date": "2021-12-31",
+    "filing_date": "2022-02-14"
+  },
+  {
+    "name_of_issuer": "ALPHABET INC",
+    "cusip": "02079K305",
+    "value_usd": 18079000,
+    "shares": 6500,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "APPLE INC",
+    "cusip": "037833100",
+    "value_usd": 35970000,
+    "shares": 206000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "BOOKING HOLDINGS INC",
+    "cusip": "09857L108",
+    "value_usd": 18788000,
+    "shares": 8000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "BRISTOL-MYERS SQUIBB CO",
+    "cusip": "110122108",
+    "value_usd": 21909000,
+    "shares": 300000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "CIGNA CORP NEW",
+    "cusip": "125523100",
+    "value_usd": 17971000,
+    "shares": 75000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "DISCOVERY INC",
+    "cusip": "25470F302",
+    "value_usd": 18728000,
+    "shares": 750000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "GLOBAL PMTS INC",
+    "cusip": "37940X102",
+    "value_usd": 9127000,
+    "shares": 66700,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "META PLATFORMS INC",
+    "cusip": "30303M102",
+    "value_usd": 17789000,
+    "shares": 80000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "NEXSTAR MEDIA GROUP INC",
+    "cusip": "65336K103",
+    "value_usd": 14362000,
+    "shares": 76200,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "OVINTIV INC",
+    "cusip": "69047Q102",
+    "value_usd": 16221000,
+    "shares": 300000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "SPORTSMANS WHSE HLDGS INC",
+    "cusip": "84920Y106",
+    "value_usd": 2673000,
+    "shares": 250000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "STELLANTIS N.V",
+    "cusip": "N82405106",
+    "value_usd": 9762000,
+    "shares": 600000,
+    "report_date": "2022-03-31",
+    "filing_date": "2022-05-16"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 3309000,
+    "shares": 501360,
+    "report_date": "2022-06-30",
+    "filing_date": "2022-08-15"
+  },
+  {
+    "name_of_issuer": "AEROJET ROCKETDYNE HLDGS INC",
+    "cusip": "007800105",
+    "value_usd": 5301000,
+    "shares": 132561,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "CHARTER COMMUNICATIONS INC N",
+    "cusip": "16119P108",
+    "value_usd": 3034000,
+    "shares": 10000,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "CORECIVIC INC",
+    "cusip": "21871N101",
+    "value_usd": 6408000,
+    "shares": 724895,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 15547000,
+    "shares": 2019150,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "LIBERTY LATIN AMERICA LTD",
+    "cusip": "G9001E128",
+    "value_usd": 958000,
+    "shares": 155761,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "QURATE RETAIL INC",
+    "cusip": "74915M100",
+    "value_usd": 10050000,
+    "shares": 5000000,
+    "report_date": "2022-09-30",
+    "filing_date": "2022-11-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 4404500000,
+    "shares": 50000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "BLACK KNIGHT INC",
+    "cusip": "09215C105",
+    "value_usd": 9262500000,
+    "shares": 150000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "COHERENT CORP",
+    "cusip": "19247G107",
+    "value_usd": 5265000000,
+    "shares": 150000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 11641241000,
+    "shares": 1063127,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 4209750000,
+    "shares": 75000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "MGM RESORTS INTERNATIONAL",
+    "cusip": "552953101",
+    "value_usd": 3353000000,
+    "shares": 100000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "QURATE RETAIL INC",
+    "cusip": "74915M100",
+    "value_usd": 2445000000,
+    "shares": 1500000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "SKYWEST INC",
+    "cusip": "830879102",
+    "value_usd": 2063750000,
+    "shares": 125000,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "WOLVERINE WORLD WIDE INC",
+    "cusip": "978097103",
+    "value_usd": 3892184000,
+    "shares": 356101,
+    "report_date": "2022-12-31",
+    "filing_date": "2023-02-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 10218000000,
+    "shares": 100000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "CAPITAL ONE FINL CORP",
+    "cusip": "14040H105",
+    "value_usd": 7212000000,
+    "shares": 75000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "COHERENT CORP",
+    "cusip": "19247G107",
+    "value_usd": 4760000000,
+    "shares": 125000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "COTERRA ENERGY INC",
+    "cusip": "127097103",
+    "value_usd": 3681000000,
+    "shares": 150000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "DEVON ENERGY CORP NEW",
+    "cusip": "25179M103",
+    "value_usd": 2444362000,
+    "shares": 48298,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "FIRST REP BK SAN FRANCISCO C",
+    "cusip": "33616C100",
+    "value_usd": 2098500000,
+    "shares": 150000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 3156000000,
+    "shares": 400000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "HUNTINGTON BANCSHARES INC",
+    "cusip": "446150104",
+    "value_usd": 2070880000,
+    "shares": 184900,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 10972500000,
+    "shares": 250000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "LIBERTY LATIN AMERICA LTD",
+    "cusip": "G9001E128",
+    "value_usd": 6608000000,
+    "shares": 800000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "NEW YORK CMNTY BANCORP INC",
+    "cusip": "649445103",
+    "value_usd": 7684000000,
+    "shares": 850000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "NOV INC",
+    "cusip": "62955J103",
+    "value_usd": 2657925000,
+    "shares": 143594,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "OVINTIV INC",
+    "cusip": "69047Q102",
+    "value_usd": 811800000,
+    "shares": 22500,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "PACWEST BANCORP DEL",
+    "cusip": "695263103",
+    "value_usd": 2432500000,
+    "shares": 250000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "SIBANYE STILLWATER LTD",
+    "cusip": "82575P107",
+    "value_usd": 6656000000,
+    "shares": 800000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "SIGNET JEWELERS LIMITED",
+    "cusip": "G81276100",
+    "value_usd": 9722500000,
+    "shares": 125000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "THE CIGNA GROUP",
+    "cusip": "125523100",
+    "value_usd": 6388250000,
+    "shares": 25000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 862397000,
+    "shares": 684442,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "WELLS FARGO CO NEW",
+    "cusip": "949746101",
+    "value_usd": 4672500000,
+    "shares": 125000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "WESTERN ALLIANCE BANCORP",
+    "cusip": "957638109",
+    "value_usd": 4442500000,
+    "shares": 125000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "ZOOM VIDEO COMMUNICATIONS IN",
+    "cusip": "98980L101",
+    "value_usd": 7384000000,
+    "shares": 100000,
+    "report_date": "2023-03-31",
+    "filing_date": "2023-05-15"
+  },
+  {
+    "name_of_issuer": "CHARTER COMMUNICATIONS INC N",
+    "cusip": "16119P108",
+    "value_usd": 9184250000,
+    "shares": 25000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "COMSTOCK RES INC",
+    "cusip": "205768302",
+    "value_usd": 2320000000,
+    "shares": 200000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "COSTAMARE INC",
+    "cusip": "Y1771G102",
+    "value_usd": 1208750000,
+    "shares": 125000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "CRESCENT ENERGY COMPANY",
+    "cusip": "44952J104",
+    "value_usd": 2542094000,
+    "shares": 243963,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "CVS HEALTH CORP",
+    "cusip": "126650100",
+    "value_usd": 6913000000,
+    "shares": 100000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "EURONAV NV",
+    "cusip": "B38564108",
+    "value_usd": 805138000,
+    "shares": 52900,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "EXPEDIA GROUP INC",
+    "cusip": "30212P303",
+    "value_usd": 10939000000,
+    "shares": 100000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "FRANKLIN TEMPLETON ETF TR",
+    "cusip": "35473P744",
+    "value_usd": 811500000,
+    "shares": 30000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "GENERAC HLDGS INC",
+    "cusip": "368736104",
+    "value_usd": 8202150000,
+    "shares": 55000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "GEO GROUP INC NEW",
+    "cusip": "36162J106",
+    "value_usd": 4296000000,
+    "shares": 600000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "HANESBRANDS INC",
+    "cusip": "410345102",
+    "value_usd": 1816000000,
+    "shares": 400000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "HUDSON PAC PPTYS INC",
+    "cusip": "444097109",
+    "value_usd": 1055000000,
+    "shares": 250000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "IHEARTMEDIA INC",
+    "cusip": "45174J509",
+    "value_usd": 2184000000,
+    "shares": 600000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "INVESCO QQQ TR",
+    "cusip": "46090E103",
+    "value_usd": 738840000000,
+    "shares": 2000000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "ISHARES INC",
+    "cusip": "464286582",
+    "value_usd": 923091000,
+    "shares": 13500,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "ISHARES INC",
+    "cusip": "46434G822",
+    "value_usd": 619000000,
+    "shares": 10000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "ISHARES TR",
+    "cusip": "46435U374",
+    "value_usd": 372096000,
+    "shares": 13600,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "LIBERTY LATIN AMERICA LTD",
+    "cusip": "G9001E128",
+    "value_usd": 3879000000,
+    "shares": 450000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "MGM RESORTS INTERNATIONAL",
+    "cusip": "552953101",
+    "value_usd": 6588000000,
+    "shares": 150000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "NEW YORK CMNTY BANCORP INC",
+    "cusip": "649445103",
+    "value_usd": 2248000000,
+    "shares": 200000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "NEXSTAR MEDIA GROUP INC",
+    "cusip": "65336K103",
+    "value_usd": 2498250000,
+    "shares": 15000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "NEXTIER OILFIELD SOLUTIONS",
+    "cusip": "65290C105",
+    "value_usd": 3576000000,
+    "shares": 400000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "PRECISION DRILLING CORP",
+    "cusip": "74022D407",
+    "value_usd": 569060000,
+    "shares": 11630,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "QURATE RETAIL INC",
+    "cusip": "74915M100",
+    "value_usd": 1484700000,
+    "shares": 1500000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "SAFE BULKERS INC",
+    "cusip": "Y7388L103",
+    "value_usd": 415732000,
+    "shares": 127525,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "SIGNET JEWELERS LIMITED",
+    "cusip": "G81276100",
+    "value_usd": 5547100000,
+    "shares": 85000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "SPDR S&P 500 ETF TR",
+    "cusip": "78462F103",
+    "value_usd": 886560000000,
+    "shares": 2000000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "STAR BULK CARRIERS CORP.",
+    "cusip": "Y8162K204",
+    "value_usd": 3269898000,
+    "shares": 184740,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "STELLANTIS N.V",
+    "cusip": "N82405106",
+    "value_usd": 5700500000,
+    "shares": 325000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "THE CIGNA GROUP",
+    "cusip": "125523100",
+    "value_usd": 7716500000,
+    "shares": 27500,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 3330000000,
+    "shares": 1500000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "VITAL ENERGY INC",
+    "cusip": "516806205",
+    "value_usd": 5643750000,
+    "shares": 125000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "WARNER BROS DISCOVERY INC",
+    "cusip": "934423104",
+    "value_usd": 4702500000,
+    "shares": 375000,
+    "report_date": "2023-06-30",
+    "filing_date": "2023-08-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 4337000000,
+    "shares": 50000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "BOOKING HOLDINGS INC",
+    "cusip": "09857L108",
+    "value_usd": 7709875000,
+    "shares": 2500,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "CRESCENT ENERGY COMPANY",
+    "cusip": "44952J104",
+    "value_usd": 2528000000,
+    "shares": 200000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "EURONAV NV",
+    "cusip": "B38564108",
+    "value_usd": 4107500000,
+    "shares": 250000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "HUDSON PAC PPTYS INC",
+    "cusip": "444097109",
+    "value_usd": 2660000000,
+    "shares": 400000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "ISHARES TR",
+    "cusip": "464287523",
+    "value_usd": 47365000000,
+    "shares": 100000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 3641250000,
+    "shares": 125000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "NEXSTAR MEDIA GROUP INC",
+    "cusip": "65336K103",
+    "value_usd": 6975094000,
+    "shares": 48651,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "SAFE BULKERS INC",
+    "cusip": "Y7388L103",
+    "value_usd": 972000000,
+    "shares": 300000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "STAR BULK CARRIERS CORP.",
+    "cusip": "Y8162K204",
+    "value_usd": 4820000000,
+    "shares": 250000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "STELLANTIS N.V",
+    "cusip": "N82405106",
+    "value_usd": 7652000000,
+    "shares": 400000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 1582500000,
+    "shares": 750000,
+    "report_date": "2023-09-30",
+    "filing_date": "2023-11-14"
+  },
+  {
+    "name_of_issuer": "ADVANCE AUTO PARTS INC",
+    "cusip": "00751Y106",
+    "value_usd": 4272100000,
+    "shares": 70000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 5813250000,
+    "shares": 75000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "ALPHABET INC",
+    "cusip": "02079K305",
+    "value_usd": 4889150000,
+    "shares": 35000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "AMAZON COM INC",
+    "cusip": "023135106",
+    "value_usd": 4558200000,
+    "shares": 30000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "AMERICAN COASTAL INS CORP",
+    "cusip": "910710102",
+    "value_usd": 1990081000,
+    "shares": 210368,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "BIG LOTS INC",
+    "cusip": "089302103",
+    "value_usd": 1752750000,
+    "shares": 225000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "BLOCK INC",
+    "cusip": "852234103",
+    "value_usd": 3867500000,
+    "shares": 50000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "BOOKING HOLDINGS INC",
+    "cusip": "09857L108",
+    "value_usd": 4434025000,
+    "shares": 1250,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "BRUKER CORP",
+    "cusip": "116794108",
+    "value_usd": 3674000000,
+    "shares": 50000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "CITIGROUP INC",
+    "cusip": "172967424",
+    "value_usd": 5144000000,
+    "shares": 100000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "CVS HEALTH CORP",
+    "cusip": "126650100",
+    "value_usd": 5132400000,
+    "shares": 65000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "GEN RESTAURENT GROUP",
+    "cusip": "36870C104",
+    "value_usd": 1206932000,
+    "shares": 154142,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "HCA HEALTHCARE INC",
+    "cusip": "40412C101",
+    "value_usd": 5413600000,
+    "shares": 20000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 5778000000,
+    "shares": 200000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "METTLER TOLEDO INTERNATIONAL",
+    "cusip": "592688105",
+    "value_usd": 2425920000,
+    "shares": 2000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "MGM RESORTS INTERNATIONAL",
+    "cusip": "552953101",
+    "value_usd": 4468000000,
+    "shares": 100000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "NEXSTAR MEDIA GROUP INC",
+    "cusip": "65336K103",
+    "value_usd": 5094375000,
+    "shares": 32500,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "ORACLE CORP",
+    "cusip": "68389X105",
+    "value_usd": 5271500000,
+    "shares": 50000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "QURATE RETAIL INC",
+    "cusip": "74915M100",
+    "value_usd": 525300000,
+    "shares": 600000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "SAFE BULKERS INC",
+    "cusip": "Y7388L103",
+    "value_usd": 982500000,
+    "shares": 250000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "STAR BULK CARRIERS CORP.",
+    "cusip": "Y8162K204",
+    "value_usd": 4681622000,
+    "shares": 220208,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 1316160000,
+    "shares": 654806,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "TOAST INC",
+    "cusip": "888787108",
+    "value_usd": 3652000000,
+    "shares": 200000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "VITAL ENERGY INC",
+    "cusip": "516806205",
+    "value_usd": 3980375000,
+    "shares": 87500,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "WARNER BROS DISCOVERY INC",
+    "cusip": "934423104",
+    "value_usd": 4267500000,
+    "shares": 375000,
+    "report_date": "2023-12-31",
+    "filing_date": "2024-02-14"
+  },
+  {
+    "name_of_issuer": "ADVANCE AUTO PARTS INC",
+    "cusip": "00751Y106",
+    "value_usd": 7232650000,
+    "shares": 85000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 9045000000,
+    "shares": 125000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "AMERICAN COASTAL INS CORP",
+    "cusip": "910710102",
+    "value_usd": 2692725000,
+    "shares": 251892,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "BAIDU INC",
+    "cusip": "056752108",
+    "value_usd": 4211200000,
+    "shares": 40000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "BLOCK INC",
+    "cusip": "852234103",
+    "value_usd": 7612200000,
+    "shares": 90000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "BP PLC",
+    "cusip": "055622104",
+    "value_usd": 6594000000,
+    "shares": 175000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "CITIGROUP INC",
+    "cusip": "172967424",
+    "value_usd": 7905000000,
+    "shares": 125000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "FIRST SOLAR INC",
+    "cusip": "336433107",
+    "value_usd": 5064000000,
+    "shares": 30000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "HCA HEALTHCARE INC",
+    "cusip": "40412C101",
+    "value_usd": 8338250000,
+    "shares": 25000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 9860400000,
+    "shares": 360000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "SAFE BULKERS INC",
+    "cusip": "Y7388L103",
+    "value_usd": 1984000000,
+    "shares": 400000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "SPROTT PHYSICAL GOLD TR",
+    "cusip": "85207H104",
+    "value_usd": 7624612000,
+    "shares": 440729,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "STAR BULK CARRIERS CORP.",
+    "cusip": "Y8162K204",
+    "value_usd": 5967500000,
+    "shares": 250000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "THE CIGNA GROUP",
+    "cusip": "125523100",
+    "value_usd": 7263800000,
+    "shares": 20000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 5523626000,
+    "shares": 1412692,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "VITAL ENERGY INC",
+    "cusip": "516806205",
+    "value_usd": 6567500000,
+    "shares": 125000,
+    "report_date": "2024-03-31",
+    "filing_date": "2024-05-15"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 11160000000,
+    "shares": 155000,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "AMERICAN COASTAL INS CORP",
+    "cusip": "910710102",
+    "value_usd": 2657461000,
+    "shares": 251892,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "BAIDU INC",
+    "cusip": "056752108",
+    "value_usd": 6486000000,
+    "shares": 75000,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "BIOATLA INC",
+    "cusip": "09077B104",
+    "value_usd": 868524000,
+    "shares": 633959,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "HUDSON PAC PPTYS INC",
+    "cusip": "444097109",
+    "value_usd": 5504732000,
+    "shares": 1144435,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 6460000000,
+    "shares": 250000,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "MOLINA HEALTHCARE INC",
+    "cusip": "60855R100",
+    "value_usd": 7292769000,
+    "shares": 24530,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "OLAPLEX HLDGS INC",
+    "cusip": "679369108",
+    "value_usd": 1532685000,
+    "shares": 995250,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "SHIFT4 PMTS INC",
+    "cusip": "82452J109",
+    "value_usd": 7335000000,
+    "shares": 100000,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 3190000000,
+    "shares": 1000000,
+    "report_date": "2024-06-30",
+    "filing_date": "2024-08-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 21224000000,
+    "shares": 200000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "AMERICAN COASTAL INS CORP",
+    "cusip": "910710102",
+    "value_usd": 1127000000,
+    "shares": 100000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "BAIDU INC",
+    "cusip": "056752108",
+    "value_usd": 13161250000,
+    "shares": 125000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 20000000000,
+    "shares": 500000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "MOLINA HEALTHCARE INC",
+    "cusip": "60855R100",
+    "value_usd": 10336800000,
+    "shares": 30000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "OLAPLEX HLDGS INC",
+    "cusip": "679369108",
+    "value_usd": 2350000000,
+    "shares": 1000000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "SHIFT4 PMTS INC",
+    "cusip": "82452J109",
+    "value_usd": 13290000000,
+    "shares": 150000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "THE REALREAL INC",
+    "cusip": "88339P101",
+    "value_usd": 1570000000,
+    "shares": 500000,
+    "report_date": "2024-09-30",
+    "filing_date": "2024-11-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 12718500000,
+    "shares": 150000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "AMERICAN COASTAL INS CORP",
+    "cusip": "910710102",
+    "value_usd": 1966506000,
+    "shares": 146100,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "BAIDU INC",
+    "cusip": "056752108",
+    "value_usd": 10538750000,
+    "shares": 125000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "BRUKER CORP",
+    "cusip": "116794108",
+    "value_usd": 4396500000,
+    "shares": 75000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "CANADA GOOSE HLDGS INC",
+    "cusip": "135086106",
+    "value_usd": 249125000,
+    "shares": 24838,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "HCA HEALTHCARE INC",
+    "cusip": "40412C101",
+    "value_usd": 4502250000,
+    "shares": 15000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 10401000000,
+    "shares": 300000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "LAUDER ESTEE COS INC",
+    "cusip": "518439104",
+    "value_usd": 7498000000,
+    "shares": 100000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "MAGNERA CORP",
+    "cusip": "55939A107",
+    "value_usd": 3634000000,
+    "shares": 200000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "MOLINA HEALTHCARE INC",
+    "cusip": "60855R100",
+    "value_usd": 7276250000,
+    "shares": 25000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "OSCAR HEALTH INC",
+    "cusip": "687793109",
+    "value_usd": 2688000000,
+    "shares": 200000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "PDD HOLDINGS INC",
+    "cusip": "722304102",
+    "value_usd": 7274250000,
+    "shares": 75000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "V F CORP",
+    "cusip": "918204108",
+    "value_usd": 4292000000,
+    "shares": 200000,
+    "report_date": "2024-12-31",
+    "filing_date": "2025-02-14"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 26446000000,
+    "shares": 200000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "BAIDU INC",
+    "cusip": "056752108",
+    "value_usd": 9203000000,
+    "shares": 100000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 16448000000,
+    "shares": 400000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "LAUDER ESTEE COS INC",
+    "cusip": "518439104",
+    "value_usd": 13200000000,
+    "shares": 200000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "NVIDIA CORPORATION",
+    "cusip": "67066G104",
+    "value_usd": 97542000000,
+    "shares": 900000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "PDD HOLDINGS INC",
+    "cusip": "722304102",
+    "value_usd": 23670000000,
+    "shares": 200000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "TRIP COM GROUP LTD",
+    "cusip": "89677Q107",
+    "value_usd": 12716000000,
+    "shares": 200000,
+    "report_date": "2025-03-31",
+    "filing_date": "2025-05-15"
+  },
+  {
+    "name_of_issuer": "ALIBABA GROUP HLDG LTD",
+    "cusip": "01609W102",
+    "value_usd": 28352500000,
+    "shares": 250000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "ASML HOLDING N V",
+    "cusip": "N07059210",
+    "value_usd": 20034750000,
+    "shares": 25000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "BRUKER CORP",
+    "cusip": "116794108",
+    "value_usd": 10300000000,
+    "shares": 250000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "JD.COM INC",
+    "cusip": "47215P106",
+    "value_usd": 32640000000,
+    "shares": 1000000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "LAUDER ESTEE COS INC",
+    "cusip": "518439104",
+    "value_usd": 40400000000,
+    "shares": 500000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "LULULEMON ATHLETICA INC",
+    "cusip": "550021109",
+    "value_usd": 11879000000,
+    "shares": 50000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "MERCADOLIBRE INC",
+    "cusip": "58733R102",
+    "value_usd": 7840890000,
+    "shares": 3000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "META PLATFORMS INC",
+    "cusip": "30303M102",
+    "value_usd": 73809000000,
+    "shares": 100000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "REGENERON PHARMACEUTICALS",
+    "cusip": "75886F107",
+    "value_usd": 7875000000,
+    "shares": 15000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "UNITEDHEALTH GROUP INC",
+    "cusip": "91324P102",
+    "value_usd": 6239400000,
+    "shares": 20000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "V F CORP",
+    "cusip": "918204108",
+    "value_usd": 17625000000,
+    "shares": 1500000,
+    "report_date": "2025-06-30",
+    "filing_date": "2025-08-14"
+  },
+  {
+    "name_of_issuer": "BRUKER CORP",
+    "cusip": "116794207",
+    "value_usd": 13137181000,
+    "shares": 48334,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "HALLIBURTON CO",
+    "cusip": "406216101",
+    "value_usd": 61500000000,
+    "shares": 2500000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "LULULEMON ATHLETICA INC",
+    "cusip": "550021109",
+    "value_usd": 17793000000,
+    "shares": 100000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "MOLINA HEALTHCARE INC",
+    "cusip": "60855R100",
+    "value_usd": 23920000000,
+    "shares": 125000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "NVIDIA CORPORATION",
+    "cusip": "67066G104",
+    "value_usd": 186580000000,
+    "shares": 1000000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "PALANTIR TECHNOLOGIES INC",
+    "cusip": "69608A108",
+    "value_usd": 912100000000,
+    "shares": 5000000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "PFIZER INC",
+    "cusip": "717081103",
+    "value_usd": 152880000000,
+    "shares": 6000000,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  },
+  {
+    "name_of_issuer": "SLM CORP",
+    "cusip": "78442P106",
+    "value_usd": 13287895000,
+    "shares": 480054,
+    "report_date": "2025-09-30",
+    "filing_date": "2025-11-03"
+  }
+]

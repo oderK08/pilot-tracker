@@ -24,20 +24,12 @@ BENCHMARK_TICKER = "SPY"
 HEDGE_FUND_YEARS = 5
 
 
-def build_congress_trades(name: str) -> pd.DataFrame:
+def _normalize_congress_trades(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Normalise les transactions au format attendu par le simulateur, avec le
-    VRAI montant estimé (milieu de la fourchette déclarée) pour chaque
-    transaction.
-
-    Fusionne systématiquement avec l'archive persistante locale (voir
-    data_sources/archive.py) : la source externe n'a qu'~1,5 an
-    d'historique glissant, donc SANS cette fusion on serait pour toujours
-    limité à cette fenêtre, même après des années d'utilisation.
+    Transforme un DataFrame brut de transactions (qu'il vienne de l'archive
+    ou d'une récupération en direct) au format attendu par le simulateur,
+    avec le VRAI montant estimé (milieu de la fourchette déclarée).
     """
-    live_df = congress_trades.get_transactions_for_politician(name)
-    df = archive.merge_and_save("congress", name, live_df, archive.CONGRESS_DEDUP_KEYS)
-
     records = []
     for _, row in df.iterrows():
         ticker = row.get("ticker")
@@ -72,11 +64,45 @@ def build_congress_trades(name: str) -> pd.DataFrame:
 
     df_trades = pd.DataFrame(records)
     if df_trades.empty:
-        raise RuntimeError(
-            f"Transactions trouvées pour '{name}' mais aucune n'a pu être normalisée "
-            "(tickers manquants ou types de transaction non reconnus)."
-        )
+        raise RuntimeError("Aucune transaction n'a pu être normalisée (tickers manquants ou types non reconnus).")
     return df_trades
+
+
+def build_congress_trades(name: str) -> pd.DataFrame:
+    """
+    Normalise les transactions au format attendu par le simulateur, avec le
+    VRAI montant estimé (milieu de la fourchette déclarée) pour chaque
+    transaction.
+
+    Fusionne systématiquement avec l'archive persistante locale (voir
+    data_sources/archive.py) : la source externe n'a qu'~1,5 an
+    d'historique glissant, donc SANS cette fusion on serait pour toujours
+    limité à cette fenêtre, même après des années d'utilisation.
+    """
+    live_df = congress_trades.get_transactions_for_politician(name)
+    df = archive.merge_and_save("congress", name, live_df, archive.CONGRESS_DEDUP_KEYS)
+    try:
+        return _normalize_congress_trades(df)
+    except RuntimeError as e:
+        raise RuntimeError(f"Transactions trouvées pour '{name}' mais {e}") from e
+
+
+def _snapshots_from_history(history: pd.DataFrame):
+    """
+    Transforme un historique 13F déjà résolu en tickers (qu'il vienne de
+    l'archive ou d'une récupération en direct) en (snapshots,
+    first_report_date, first_total_value).
+    """
+    snapshots = []
+    for report_date, group in history.groupby("report_date"):
+        holdings = dict(zip(group["ticker"], group["shares"]))
+        snapshots.append((report_date, holdings))
+    snapshots.sort(key=lambda s: s[0])
+
+    first_date, _ = snapshots[0]
+    first_total_value = history[history["report_date"] == first_date]["value_usd"].sum()
+
+    return snapshots, first_date, first_total_value
 
 
 def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
@@ -105,16 +131,7 @@ def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
     if history.empty:
         raise RuntimeError(f"Positions trouvées pour '{name}' mais aucun CUSIP n'a pu être résolu en ticker.")
 
-    snapshots = []
-    for report_date, group in history.groupby("report_date"):
-        holdings = dict(zip(group["ticker"], group["shares"]))
-        snapshots.append((report_date, holdings))
-    snapshots.sort(key=lambda s: s[0])
-
-    first_date, _ = snapshots[0]
-    first_total_value = history[history["report_date"] == first_date]["value_usd"].sum()
-
-    return snapshots, first_date, first_total_value
+    return _snapshots_from_history(history)
 
 
 def compute_benchmark_dca(trades: pd.DataFrame) -> pd.DataFrame:
@@ -184,7 +201,7 @@ def normalize_to_base(df: pd.DataFrame, value_col: str, base: float = 10_000.0) 
     return df
 
 
-def run_simulation(pilot_type: str, name: str, progress_callback=None):
+def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_archive: bool = True):
     """
     Fonction principale : reconstitue le portefeuille réel d'un pilote.
 
@@ -195,6 +212,14 @@ def run_simulation(pilot_type: str, name: str, progress_callback=None):
             progression (str) -- utile pour afficher un état d'avancement
             dans une interface interactive (Streamlit), sans coupler ce
             module à un framework d'interface en particulier.
+        prefer_archive: si True (défaut), et qu'une archive existe déjà pour
+            ce pilote, on l'utilise DIRECTEMENT sans requête réseau -- c'est
+            ce qui rend les pilotes suivis par update_archive.py (voir
+            update_archive.py) quasi INSTANTANÉS à consulter, au lieu
+            d'attendre ~20 requêtes SEC (13F) ou un téléchargement complet
+            (Congrès) à chaque fois. Un pilote jamais vu auparavant (pas
+            encore dans l'archive) déclenche quand même la récupération en
+            direct normale, qui alimente l'archive pour la prochaine fois.
 
     Retourne (sim, benchmark_df).
     """
@@ -206,6 +231,16 @@ def run_simulation(pilot_type: str, name: str, progress_callback=None):
     sim = PortfolioSimulator()
 
     if pilot_type == "congress":
+        if prefer_archive:
+            archived = archive.load_archive("congress", name)
+            if not archived.empty:
+                _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
+                        f"({len(archived)} transactions déjà connues).")
+                trades = _normalize_congress_trades(archived)
+                sim.process_trades(trades)
+                benchmark_df = compute_benchmark_dca(trades)
+                return sim, benchmark_df
+
         trades = build_congress_trades(name)
         total_invested = trades.loc[trades["action"] == "buy", "dollar_amount"].sum()
         _notify(f"{len(trades)} transactions à reconstituer pour {name} "
@@ -214,6 +249,20 @@ def run_simulation(pilot_type: str, name: str, progress_callback=None):
         benchmark_df = compute_benchmark_dca(trades)
 
     elif pilot_type == "hedge_fund":
+        if prefer_archive:
+            archived = archive.load_archive("hedge_fund", name)
+            if not archived.empty:
+                cusip_map = cusip_resolver.build_cusip_to_ticker_map()
+                archived["ticker"] = archived["cusip"].map(cusip_map)
+                archived = archived.dropna(subset=["ticker"])
+                if not archived.empty:
+                    _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
+                            f"({archived['report_date'].nunique()} trimestres déjà connus).")
+                    snapshots, first_date, first_value = _snapshots_from_history(archived)
+                    sim.set_holdings_timeline(snapshots)
+                    benchmark_df = compute_benchmark_lump_sum(first_value, first_date)
+                    return sim, benchmark_df
+
         snapshots, first_date, first_value = build_hedge_fund_timeline(name, years=HEDGE_FUND_YEARS)
         n_tickers_total = len(set(t for _, h in snapshots for t in h.keys()))
         _notify(f"{len(snapshots)} trimestres réels reconstitués pour {name} sur {HEDGE_FUND_YEARS} ans "

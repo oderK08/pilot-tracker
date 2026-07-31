@@ -1,0 +1,38 @@
+name: Mettre à jour l'archive des pilotes suivis
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # tous les jours à 6h UTC
+  workflow_dispatch:        # permet aussi de le lancer manuellement
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Mettre à jour l'archive
+        env:
+          EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: python update_archive.py
+
+      - name: Committer l'archive mise à jour
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data_archive/
+          git diff --staged --quiet || git commit -m "Mise à jour automatique de l'archive"
+          git push

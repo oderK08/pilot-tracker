@@ -14,11 +14,21 @@ Table"), d'où ce module dédié.
   2. Trouver son dépôt 13F-HR le plus récent
   3. Localiser et parser le fichier XML "Information Table" de ce dépôt
 """
+import os
 import re
 import requests
 import pandas as pd
 
-HEADERS = {"User-Agent": "pilot-tracker (usage personnel non-commercial)"}
+# La SEC EXIGE un User-Agent au format "Nom Prénom email@exemple.com" -- un
+# texte générique se fait bloquer avec une erreur 403. Cette variable
+# d'environnement suit exactement le même principe que EDGAR_USER_AGENT
+# dans le projet research-dashboard principal.
+EDGAR_USER_AGENT = os.environ.get("EDGAR_USER_AGENT", "")
+if not EDGAR_USER_AGENT:
+    print("[hedge_fund_13f] ATTENTION: EDGAR_USER_AGENT n'est pas définie. "
+          "La SEC exige un User-Agent identifiable (nom + email), sinon les requêtes "
+          "seront bloquées avec une erreur 403.")
+HEADERS = {"User-Agent": EDGAR_USER_AGENT or "pilot-tracker contact@example.com"}
 TIMEOUT = 30
 
 SEARCH_URL = "https://www.sec.gov/cgi-bin/browse-edgar"

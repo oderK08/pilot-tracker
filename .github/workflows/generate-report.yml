@@ -1,5 +1,8 @@
 name: Générer le rapport pilot-tracker
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:

@@ -1,0 +1,43 @@
+name: Générer le rapport pilot-tracker
+
+on:
+  workflow_dispatch:
+    inputs:
+      pilot_type:
+        description: "Type de pilote"
+        required: true
+        type: choice
+        options:
+          - congress
+          - hedge_fund
+        default: congress
+      name:
+        description: 'Nom exact (ex: "Nancy Pelosi" ou "Berkshire Hathaway")'
+        required: true
+        type: string
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Générer le rapport
+        run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
+
+      - name: Sauvegarder les résultats dans le repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add output/
+          git diff --staged --quiet || git commit -m "Rapport généré: ${{ inputs.name }}"
+          git push

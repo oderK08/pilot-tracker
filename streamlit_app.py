@@ -18,6 +18,7 @@ import plotly.graph_objects as go
 import pandas as pd
 
 import core
+from tracked_pilots import TRACKED_CONGRESS, TRACKED_HEDGE_FUNDS
 
 st.set_page_config(page_title="Pilot Tracker", page_icon="📊", layout="wide")
 
@@ -25,10 +26,10 @@ st.set_page_config(page_title="Pilot Tracker", page_icon="📊", layout="wide")
 @st.cache_data(ttl=6 * 3600, show_spinner=False)
 def get_pilot_data(pilot_type: str, name: str):
     """
-    Mis en cache 6h -- évite de re-frapper les sources externes (EDGAR,
-    congress-trading-monitor, prix) à chaque interaction de l'utilisateur
-    sur la même recherche, important vu les limites de requêtes de
-    certaines sources (SEC, Alpha Vantage en secours).
+    Mis en cache 6h -- pour les pilotes de la liste suivie, la lecture est
+    déjà quasi instantanée grâce à l'archive locale (voir core.run_simulation),
+    ce cache Streamlit évite juste de refaire le travail de simulation à
+    chaque interaction sur la même recherche pendant une session.
     """
     sim, benchmark_df = core.run_simulation(pilot_type, name)
     value_df = sim.value_over_time()
@@ -50,10 +51,13 @@ with st.sidebar:
         ["congress", "hedge_fund"],
         format_func=lambda x: "🏛️ Politicien (Congrès)" if x == "congress" else "🏦 Hedge Fund (13F)",
     )
-    name = st.text_input(
-        "Nom exact",
-        placeholder='ex: "Nancy Pelosi" ou "Berkshire Hathaway"',
-    )
+
+    # Menu déroulant FERMÉ -- pas de champ de texte libre. La plateforme
+    # affiche uniquement les pilotes qu'on a choisi de suivre (voir
+    # tracked_pilots.py), pas n'importe quel nom tapé au clavier.
+    options = TRACKED_CONGRESS if pilot_type == "congress" else TRACKED_HEDGE_FUNDS
+    name = st.selectbox("Choisir dans la liste suivie", options)
+
     run = st.button("Analyser", type="primary", use_container_width=True)
 
     st.divider()
@@ -142,7 +146,5 @@ if run and name:
     st.subheader("Historique des mouvements")
     st.dataframe(log_df, use_container_width=True, hide_index=True)
 
-elif run and not name:
-    st.warning("Entre un nom avant de lancer l'analyse.")
-else:
-    st.info("👈 Choisis un type de pilote et entre un nom dans la barre latérale pour commencer.")
+elif not run:
+    st.info("👈 Choisis un type de pilote et un nom dans la barre latérale, puis clique sur \"Analyser\".")

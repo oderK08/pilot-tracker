@@ -1,153 +1,84 @@
 """
 Client pour les transactions boursières déclarées par les membres du
-Congrès américain (Sénat + Chambre des représentants), via les projets
-House Stock Watcher / Senate Stock Watcher.
+Congrès américain (Sénat + Chambre + exécutif), via le projet open source
+"Congress Trading Monitor" (https://github.com/kadoa-org/congress-trading-monitor).
 
-⚠️ AVERTISSEMENT IMPORTANT : les domaines housestockwatcher.com et
-senatestockwatcher.com n'étaient pas accessibles depuis l'environnement de
-développement (restriction réseau du bac à sable), donc ce client n'a PAS
-pu être testé en conditions réelles -- contrairement à la quasi-totalité
-des autres sources de ce projet. La structure de requête est basée sur la
-documentation trouvée en ligne (des projets tiers qui utilisent
-effectivement cette API), mais un premier run réel peut révéler un
-ajustement nécessaire.
+⚠️ TROISIÈME SOURCE ESSAYÉE POUR CE MODULE :
+  1. housestockwatcher.com / senatestockwatcher.com -> définitivement hors
+     service (certificat SSL expiré, domaine ne résolvant plus).
+  2. API Quiver Quantitative -> l'accès programmatique (pas juste le site
+     web) nécessite un abonnement payant, contrairement à ce que suggérait
+     la documentation générale du palier "gratuit".
+  3. Cette source (celle utilisée ici) : un projet open source qui republie
+     en JSON statique, sur GitHub, les déclarations officielles agrégées
+     depuis le Clerk de la Chambre, le système eFD du Sénat, et l'Office of
+     Government Ethics -- gratuit, sans clé API, mis à jour quotidiennement,
+     hébergé directement sur GitHub (donc pas de risque de paywall soudain
+     comme un service commercial).
 
-Par ailleurs, le fichier précalculé du dépôt GitHub
-timothycarambat/senate-stock-watcher-data (aggregate/all_transactions_for_senators.json)
-s'est avéré à l'usage ARRÊTÉ DEPUIS FIN 2020 -- plus mis à jour, donc pas
-utilisé ici comme source malgré son accessibilité technique.
-
-RECOMMANDATION : teste ce module seul (voir le bloc `if __name__ == "__main__"`
-en bas de ce fichier) avant de construire le reste du pipeline dessus.
+Limite connue : le fichier ne couvre que les transactions les plus
+récentes (environ 1,5 an d'historique glissant au moment de l'écriture),
+pas l'historique complet depuis 2012 que le projet propose par ailleurs sur
+son site -- largement suffisant pour notre usage (simuler un portefeuille
+qui suit les transactions à venir/récentes d'un pilote).
 """
-import re
 import requests
 import pandas as pd
 
-HOUSE_API_URL = "https://housestockwatcher.com/api/transactions"
-SENATE_API_URL = "https://senatestockwatcher.com/api/transactions"
+TRADES_URL = "https://raw.githubusercontent.com/kadoa-org/congress-trading-monitor/main/public/data/trades.json"
 TIMEOUT = 30
 
-# Noms de champs alternatifs à essayer, au cas où la structure exacte de
-# l'API en direct diffère légèrement de la documentation trouvée.
-FIELD_ALIASES = {
-    "person_name": ["representative", "senator", "name", "office"],
-    "transaction_date": ["transaction_date"],
-    "disclosure_date": ["disclosure_date", "date_recieved"],
-    "ticker": ["ticker"],
-    "transaction_type": ["type", "transaction_type"],
-    "amount_range": ["amount"],
-    "asset_description": ["asset_description"],
-}
 
-
-def _get_field(entry: dict, field: str):
-    for alias in FIELD_ALIASES[field]:
-        if alias in entry and entry[alias]:
-            return entry[alias]
-    return None
-
-
-def _clean_ticker(raw_ticker) -> str:
-    """Nettoie le champ ticker (parfois du HTML embarqué, parfois '--' pour inconnu)."""
-    if not raw_ticker or raw_ticker == "--":
-        return None
-    # Retire toute balise HTML éventuelle (ex: "<a href=...>DNKN</a>")
-    text = re.sub(r"<[^>]+>", "", str(raw_ticker)).strip()
-    return text if text and text != "--" else None
-
-
-def parse_amount_range(amount_str: str) -> float:
-    """
-    Convertit une fourchette de montant déclarée (ex: "$1,001 - $15,000")
-    en une valeur numérique représentative (le milieu de la fourchette).
-    Les déclarations du STOCK Act ne donnent jamais le montant exact, donc
-    cette approximation est une limite intrinsèque de la donnée source, pas
-    de ce code.
-    """
-    if not amount_str:
-        return None
-    numbers = re.findall(r"[\d,]+", amount_str)
-    if not numbers:
-        return None
-    values = [float(n.replace(",", "")) for n in numbers]
-    if len(values) == 1:
-        return values[0]
-    return sum(values) / len(values)
-
-
-def _fetch_transactions(url: str, chamber: str) -> pd.DataFrame:
-    resp = requests.get(url, timeout=TIMEOUT)
+def get_all_trades() -> pd.DataFrame:
+    """Récupère toutes les transactions disponibles (tous filers confondus)."""
+    resp = requests.get(TRADES_URL, timeout=TIMEOUT)
     resp.raise_for_status()
-    raw = resp.json()
+    data = resp.json()
 
-    if not isinstance(raw, list):
+    if not isinstance(data, list):
         raise RuntimeError(
-            f"[congress_trades] Structure de réponse inattendue depuis {url} "
-            f"(attendu une liste, reçu {type(raw)}). Réponse brute (tronquée): {str(raw)[:500]}"
+            f"[congress_trades] Structure de réponse inattendue (attendu une liste, "
+            f"reçu {type(data)}). Le format du fichier a peut-être changé -- voir "
+            f"{TRADES_URL}"
         )
 
-    records = []
-    for entry in raw:
-        ticker = _clean_ticker(_get_field(entry, "ticker"))
-        if ticker is None:
-            continue  # transaction sans ticker identifiable -> pas simulable
+    df = pd.DataFrame(data)
+    expected_cols = {"filer_name", "ticker", "transaction_type", "transaction_date", "filing_date"}
+    missing = expected_cols - set(df.columns)
+    if missing:
+        raise RuntimeError(
+            f"[congress_trades] Colonnes attendues manquantes: {missing}. "
+            f"Colonnes présentes: {list(df.columns)}"
+        )
 
-        records.append({
-            "chamber": chamber,
-            "person_name": _get_field(entry, "person_name"),
-            "transaction_date": _get_field(entry, "transaction_date"),
-            "disclosure_date": _get_field(entry, "disclosure_date"),
-            "ticker": ticker,
-            "transaction_type": _get_field(entry, "transaction_type"),
-            "amount_estimate": parse_amount_range(_get_field(entry, "amount_range")),
-        })
-
-    df = pd.DataFrame(records)
-    if not df.empty:
-        df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce")
-        df["disclosure_date"] = pd.to_datetime(df["disclosure_date"], errors="coerce")
+    df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce")
+    df["filing_date"] = pd.to_datetime(df["filing_date"], errors="coerce")
     return df
 
 
-def get_house_transactions() -> pd.DataFrame:
-    """Retourne toutes les transactions déclarées par les membres de la Chambre des représentants."""
-    return _fetch_transactions(HOUSE_API_URL, "house")
-
-
-def get_senate_transactions() -> pd.DataFrame:
-    """Retourne toutes les transactions déclarées par les sénateurs."""
-    return _fetch_transactions(SENATE_API_URL, "senate")
-
-
-def filter_by_politician(df: pd.DataFrame, name: str) -> pd.DataFrame:
+def get_transactions_for_politician(name: str) -> pd.DataFrame:
     """
     Filtre les transactions d'un politicien donné par correspondance
-    partielle sur le nom (insensible à la casse) -- les noms complets
-    varient souvent d'une déclaration à l'autre (ex: "Ron Wyden" vs
-    "Ronald L Wyden"), donc une correspondance exacte serait trop fragile.
+    partielle sur le nom (insensible à la casse).
     """
-    if df.empty or "person_name" not in df.columns:
-        return df
-    mask = df["person_name"].fillna("").str.lower().str.contains(name.lower())
-    return df[mask].sort_values("transaction_date").reset_index(drop=True)
+    df = get_all_trades()
+    mask = df["filer_name"].fillna("").str.lower().str.contains(name.lower())
+    result = df[mask].sort_values("transaction_date").reset_index(drop=True)
+
+    if result.empty:
+        raise RuntimeError(
+            f"[congress_trades] Aucune transaction trouvée pour '{name}' dans les données "
+            "disponibles (environ 1,5 an d'historique glissant). Vérifie l'orthographe, "
+            "ou le politicien n'a peut-être pas fait de transaction récente."
+        )
+    return result
 
 
 if __name__ == "__main__":
-    # Test rapide et isolé de ce module seul, à lancer AVANT de construire
-    # le reste du pipeline dessus (simulateur, rapport).
-    print("Test House Stock Watcher...")
+    print("Test Congress Trading Monitor -- transactions de Nancy Pelosi...")
     try:
-        house_df = get_house_transactions()
-        print(f"  {len(house_df)} transactions récupérées.")
-        print(house_df.head())
-    except Exception as e:
-        print(f"  ÉCHEC: {e}")
-
-    print("\nTest Senate Stock Watcher...")
-    try:
-        senate_df = get_senate_transactions()
-        print(f"  {len(senate_df)} transactions récupérées.")
-        print(senate_df.head())
+        df = get_transactions_for_politician("Nancy Pelosi")
+        print(f"  {len(df)} transactions récupérées.")
+        print(df[["transaction_date", "ticker", "transaction_type", "amount_range_label"]].head())
     except Exception as e:
         print(f"  ÉCHEC: {e}")

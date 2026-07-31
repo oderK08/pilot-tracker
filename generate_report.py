@@ -1,21 +1,23 @@
 """
-Script principal : simule un portefeuille virtuel copiant un "pilote"
-(politicien ou gérant de fonds) et génère les graphiques de performance,
-positions actuelles, et l'historique des transactions simulées.
+Script principal : reconstitue la valeur RÉELLE du portefeuille d'un
+"pilote" (politicien ou gérant de fonds) à partir de ses vraies déclarations
+publiques, et génère les graphiques de performance, positions actuelles, et
+l'historique des mouvements.
 
 Usage :
     python generate_report.py --pilot congress --name "Nancy Pelosi"
     python generate_report.py --pilot hedge_fund --name "Berkshire Hathaway"
 
-⚠️ Différence de comportement entre les deux types de pilote :
-  - "congress" : vraies transactions individuelles datées (achats/ventes
-    étalés dans le temps, comme un vrai historique de trading)
-  - "hedge_fund" : on n'a accès qu'au DERNIER dépôt 13F (une photo
-    trimestrielle des positions), pas à l'historique des transactions
-    individuelles -- on simule donc l'entrée en une fois dans les positions
-    actuelles, pondérées par leur poids réel dans le portefeuille déclaré,
-    à la date du rapport. La performance avant cette date n'existe donc pas
-    pour ce type de pilote (contrairement au Congrès).
+⚠️ Niveau de précision différent entre les deux types de pilote (limite
+légale de la donnée source, pas un choix de ce script) :
+  - "congress" : le STOCK Act n'oblige à déclarer qu'une FOURCHETTE de
+    montant (ex: "$1,001 - $15,000"), jamais un montant exact ni un nombre
+    d'actions. Le montant utilisé est le MILIEU de la fourchette déclarée --
+    la meilleure estimation possible, mais une estimation.
+  - "hedge_fund" : le 13F donne le nombre RÉEL et EXACT d'actions détenues à
+    la date du rapport -- utilisé tel quel, aucune estimation. En
+    contrepartie, on n'a accès qu'à ce dernier instantané trimestriel, pas à
+    l'historique des transactions individuelles qui ont mené à ces positions.
 """
 import argparse
 import os
@@ -26,17 +28,19 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from data_sources import congress_trades, hedge_fund_13f, cusip_resolver
-from data_sources.price_data import get_price_history
+from data_sources.price_data import get_price_history, get_price_on_or_after
 from simulation.portfolio_simulator import PortfolioSimulator
 
-STARTING_CASH = 10_000.0
-BUY_FRACTION = 0.10
 BENCHMARK_TICKER = "SPY"
 OUTPUT_DIR = "output"
 
 
 def _build_congress_trades(name: str) -> pd.DataFrame:
-    """Normalise les transactions de congress-trading-monitor au format attendu par le simulateur."""
+    """
+    Normalise les transactions de congress-trading-monitor au format attendu
+    par le simulateur, avec le VRAI montant estimé (milieu de la fourchette
+    déclarée) pour chaque transaction.
+    """
     df = congress_trades.get_transactions_for_politician(name)
 
     records = []
@@ -57,7 +61,19 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
         if pd.isna(date):
             continue
 
-        records.append({"date": pd.to_datetime(date), "ticker": ticker, "action": action})
+        low = row.get("amount_range_low")
+        high = row.get("amount_range_high")
+        if pd.notna(low) and pd.notna(high):
+            dollar_amount = (low + high) / 2
+        elif pd.notna(low):
+            dollar_amount = low
+        else:
+            dollar_amount = None
+
+        records.append({
+            "date": pd.to_datetime(date), "ticker": ticker, "action": action,
+            "dollar_amount": dollar_amount,
+        })
 
     df_trades = pd.DataFrame(records)
     if df_trades.empty:
@@ -68,11 +84,11 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
     return df_trades
 
 
-def _build_hedge_fund_weights(name: str):
+def _build_hedge_fund_holdings(name: str):
     """
-    Retourne (report_date, {ticker: poids}) pour un gérant de fonds, à
-    partir de son dernier dépôt 13F. Voir avertissement en tête de fichier
-    sur la limitation "photo unique" de cette approche.
+    Retourne (report_date, {ticker: nombre_reel_actions}) pour un gérant de
+    fonds, directement depuis son dernier dépôt 13F -- pas d'estimation,
+    le nombre d'actions est celui exactement déclaré.
     """
     holdings = hedge_fund_13f.get_13f_holdings(name)
     if holdings.empty:
@@ -95,41 +111,85 @@ def _build_hedge_fund_weights(name: str):
             "résolu en ticker."
         )
 
-    total_value = holdings["value_usd"].sum()
-    holdings["weight"] = holdings["value_usd"] / total_value
-    weights = dict(zip(holdings["ticker"], holdings["weight"]))
+    real_shares = dict(zip(holdings["ticker"], holdings["shares"]))
     report_date = pd.to_datetime(holdings["report_date"].iloc[0])
-    return report_date, weights
+    reported_total_value = holdings["value_usd"].sum()
+    return report_date, real_shares, reported_total_value
 
 
-def run_simulation(pilot_type: str, name: str) -> PortfolioSimulator:
-    sim = PortfolioSimulator(starting_cash=STARTING_CASH, buy_fraction=BUY_FRACTION)
+def run_simulation(pilot_type: str, name: str):
+    """Retourne (sim, benchmark_series) -- le benchmark suit exactement les mêmes montants/dates réels."""
+    sim = PortfolioSimulator()
 
     if pilot_type == "congress":
         trades = _build_congress_trades(name)
-        print(f"[generate_report] {len(trades)} transactions à simuler pour {name}.")
+        total_invested = trades.loc[trades["action"] == "buy", "dollar_amount"].sum()
+        print(f"[generate_report] {len(trades)} transactions à reconstituer pour {name} "
+              f"(~${total_invested:,.0f} au total, montants estimés au milieu des fourchettes déclarées).")
         sim.process_trades(trades)
+        benchmark_df = _compute_benchmark_dca(trades)
 
     elif pilot_type == "hedge_fund":
-        report_date, weights = _build_hedge_fund_weights(name)
-        print(f"[generate_report] {len(weights)} positions à simuler pour {name} "
-              f"(rapport du {report_date.date()}).")
-        sim.invest_by_weights(report_date, weights)
+        report_date, real_shares, reported_value = _build_hedge_fund_holdings(name)
+        print(f"[generate_report] {len(real_shares)} positions réelles à reconstituer pour {name} "
+              f"(rapport du {report_date.date()}, valeur déclarée ~${reported_value:,.0f}).")
+        sim.set_initial_holdings(report_date, real_shares)
+        benchmark_df = _compute_benchmark_lump_sum(reported_value, report_date)
 
     else:
         raise ValueError(f"pilot_type doit être 'congress' ou 'hedge_fund', reçu: '{pilot_type}'")
 
-    return sim
+    return sim, benchmark_df
 
 
-def _compute_benchmark(start_date, end_date) -> pd.DataFrame:
-    """Valeur d'un investissement identique dans le S&P 500 (SPY) sur la même période, pour comparaison."""
+def _compute_benchmark_dca(trades: pd.DataFrame) -> pd.DataFrame:
+    """
+    Benchmark pour le cas Congrès : "si les MÊMES montants réels, aux MÊMES
+    dates réelles, avaient été investis dans le S&P 500 (SPY) plutôt que
+    dans les titres réellement déclarés" -- achat progressif (dollar-cost
+    averaging) suivant exactement le calendrier réel des transactions
+    d'achat. Les ventes ne sont pas répliquées ici : le but est de comparer
+    le capital réellement déployé, pas de reproduire la stratégie de sortie.
+    """
+    buys = trades[trades["action"] == "buy"].dropna(subset=["dollar_amount"])
+    if buys.empty:
+        return pd.DataFrame(columns=["date", "benchmark_value"])
+
+    spy_prices = get_price_history(BENCHMARK_TICKER, start=str(buys["date"].min().date()))
+
+    end_date = pd.Timestamp.today()
+    dates = pd.date_range(buys["date"].min(), end_date, freq="W")
+    records = []
+    buys_sorted = buys.sort_values("date")
+    for d in dates:
+        cumulative_shares = 0.0
+        for _, trade in buys_sorted[buys_sorted["date"] <= d].iterrows():
+            try:
+                price = get_price_on_or_after(spy_prices, trade["date"])
+                cumulative_shares += trade["dollar_amount"] / price
+            except Exception:
+                continue
+        try:
+            current_price = get_price_on_or_after(spy_prices, d)
+            records.append({"date": d, "benchmark_value": cumulative_shares * current_price})
+        except Exception:
+            continue
+
+    return pd.DataFrame(records)
+
+
+def _compute_benchmark_lump_sum(amount: float, start_date) -> pd.DataFrame:
+    """
+    Benchmark pour le cas 13F : "si le montant total réellement déclaré
+    avait été investi en une fois dans le S&P 500 (SPY) à la date du
+    rapport" -- un placement unique, suivi ensuite au jour le jour.
+    """
     prices = get_price_history(BENCHMARK_TICKER, start=str(start_date.date()))
-    prices = prices[prices["date"] <= end_date]
     if prices.empty:
         return pd.DataFrame(columns=["date", "benchmark_value"])
     first_price = prices.iloc[0]["close"]
-    shares = STARTING_CASH / first_price
+    shares = amount / first_price
+    prices = prices.copy()
     prices["benchmark_value"] = prices["close"] * shares
     return prices[["date", "benchmark_value"]]
 
@@ -138,28 +198,25 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
     os.makedirs(output_dir, exist_ok=True)
     safe_name = name.lower().replace(" ", "_")
 
-    sim = run_simulation(pilot_type, name)
+    sim, benchmark_df = run_simulation(pilot_type, name)
 
     value_df = sim.value_over_time()
     if value_df.empty:
         raise RuntimeError(
-            f"[generate_report] Aucune transaction n'a pu être exécutée pour '{name}' -- "
-            "impossible de calculer une performance. Vérifie le journal des transactions "
+            f"[generate_report] Aucun mouvement n'a pu être reconstitué pour '{name}' -- "
+            "impossible de calculer une performance. Vérifie le journal "
             "(sim.get_transaction_log()) pour comprendre pourquoi."
         )
 
-    benchmark_df = _compute_benchmark(value_df["date"].min(), value_df["date"].max())
-
-    # --- Graphique 1 : performance vs S&P 500 ---
+    # --- Graphique 1 : performance réelle vs S&P 500 ---
     fig, ax = plt.subplots(figsize=(11, 6))
     ax.plot(value_df["date"], value_df["total_value"], color="#1a3a5c", linewidth=2,
-            label=f"Portefeuille copiant {name}")
+            label=f"Portefeuille réel de {name}")
     if not benchmark_df.empty:
         ax.plot(benchmark_df["date"], benchmark_df["benchmark_value"], color="#888888",
-                linewidth=1.5, linestyle="--", label="S&P 500 (repère)")
-    ax.axhline(STARTING_CASH, color="#cccccc", linewidth=0.8, linestyle=":")
+                linewidth=1.5, linestyle="--", label="S&P 500 (même capital, mêmes dates)")
     ax.set_ylabel("Valeur du portefeuille ($)")
-    ax.set_title(f"Performance simulée : copier {name}", fontsize=13, fontweight="bold", loc="left")
+    ax.set_title(f"Portefeuille réel reconstitué : {name}", fontsize=13, fontweight="bold", loc="left")
     ax.legend(loc="upper left", frameon=False)
     fig.tight_layout()
     perf_path = os.path.join(output_dir, f"{safe_name}_performance.png")
@@ -167,12 +224,7 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
     plt.close(fig)
     print(f"[generate_report] Graphique de performance sauvegardé: {perf_path}")
 
-    # --- Graphique 2 : positions actuelles ---
-    # Important : on nettoie (dropna) AVANT de décider s'il y a quelque chose
-    # à afficher, pas après -- sinon on risque de générer un graphique à
-    # partir de données qui s'avèrent vides une fois nettoyées (ex: prix du
-    # jour indisponible pour toutes les positions), créant une incohérence
-    # entre le fichier réellement sauvegardé et l'état du DataFrame.
+    # --- Graphique 2 : positions actuelles réelles ---
     positions = sim.get_current_positions()
     if not positions.empty:
         positions = positions.dropna(subset=["current_value"])
@@ -182,8 +234,8 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
         positions = positions.sort_values("current_value", ascending=True)
         fig, ax = plt.subplots(figsize=(10, max(4, len(positions) * 0.4)))
         ax.barh(positions["ticker"], positions["current_value"], color="#2e8b57")
-        ax.set_xlabel("Valeur actuelle ($)")
-        ax.set_title(f"Positions actuelles simulées : {name}", fontsize=13, fontweight="bold", loc="left")
+        ax.set_xlabel("Valeur actuelle réelle ($)")
+        ax.set_title(f"Positions actuelles réelles : {name}", fontsize=13, fontweight="bold", loc="left")
         fig.tight_layout()
         positions_path = os.path.join(output_dir, f"{safe_name}_positions.png")
         fig.savefig(positions_path, dpi=150)
@@ -191,9 +243,9 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
         print(f"[generate_report] Graphique des positions sauvegardé: {positions_path}")
     else:
         print("[generate_report] Aucune position actuelle exploitable à afficher "
-              "(tout a été vendu, rien n'a été acheté, ou prix indisponible pour les positions restantes).")
+              "(tout a été vendu, ou prix indisponible pour les positions restantes).")
 
-    # --- Export 3 : historique des transactions simulées ---
+    # --- Export 3 : historique réel des mouvements ---
     log = sim.get_transaction_log()
     log_path = os.path.join(output_dir, f"{safe_name}_transactions.csv")
     log.to_csv(log_path, index=False)
@@ -204,9 +256,9 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Simule un portefeuille copiant un politicien ou un hedge fund.")
+    parser = argparse.ArgumentParser(description="Reconstitue le portefeuille réel d'un politicien ou d'un hedge fund.")
     parser.add_argument("--pilot", choices=["congress", "hedge_fund"], required=True,
-                         help="Type de pilote à copier")
+                         help="Type de pilote à suivre")
     parser.add_argument("--name", required=True, help="Nom du politicien ou du gérant de fonds")
     parser.add_argument("--output-dir", default=OUTPUT_DIR, help="Dossier de sortie (défaut: output/)")
     args = parser.parse_args()

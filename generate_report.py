@@ -13,11 +13,13 @@ légale de la donnée source, pas un choix de ce script) :
   - "congress" : le STOCK Act n'oblige à déclarer qu'une FOURCHETTE de
     montant (ex: "$1,001 - $15,000"), jamais un montant exact ni un nombre
     d'actions. Le montant utilisé est le MILIEU de la fourchette déclarée --
-    la meilleure estimation possible, mais une estimation.
+    la meilleure estimation possible, mais une estimation. La source de
+    données ne couvre par ailleurs qu'environ 1,5 an d'historique glissant,
+    pas 5 ans (limite de la source, pas un choix de ce script).
   - "hedge_fund" : le 13F donne le nombre RÉEL et EXACT d'actions détenues à
-    la date du rapport -- utilisé tel quel, aucune estimation. En
-    contrepartie, on n'a accès qu'à ce dernier instantané trimestriel, pas à
-    l'historique des transactions individuelles qui ont mené à ces positions.
+    CHAQUE trimestre déclaré sur les 5 dernières années -- reconstitue les
+    vrais changements de position trimestre par trimestre, pas juste un
+    instantané figé.
 """
 import argparse
 import os
@@ -33,6 +35,7 @@ from simulation.portfolio_simulator import PortfolioSimulator
 
 BENCHMARK_TICKER = "SPY"
 OUTPUT_DIR = "output"
+HEDGE_FUND_YEARS = 5
 
 
 def _build_congress_trades(name: str) -> pd.DataFrame:
@@ -47,7 +50,7 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
     for _, row in df.iterrows():
         ticker = row.get("ticker")
         if not ticker or pd.isna(ticker):
-            continue  # actif sans ticker identifiable (ex: obligation municipale) -> pas simulable
+            continue
 
         transaction_type = str(row.get("transaction_type", "")).lower()
         if "purchase" in transaction_type or "buy" in transaction_type:
@@ -55,7 +58,7 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
         elif "sale" in transaction_type or "sell" in transaction_type:
             action = "sell"
         else:
-            continue  # ex: "exchange", non géré par le simulateur
+            continue
 
         date = row.get("filing_date") if pd.notna(row.get("filing_date")) else row.get("transaction_date")
         if pd.isna(date):
@@ -84,37 +87,47 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
     return df_trades
 
 
-def _build_hedge_fund_holdings(name: str):
+def _build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
     """
-    Retourne (report_date, {ticker: nombre_reel_actions}) pour un gérant de
-    fonds, directement depuis son dernier dépôt 13F -- pas d'estimation,
-    le nombre d'actions est celui exactement déclaré.
+    Retourne (snapshots, first_report_date, first_total_value) pour un
+    gérant de fonds, à partir de TOUS ses dépôts 13F-HR sur `years` années --
+    pas d'estimation, le nombre d'actions à chaque trimestre est celui
+    exactement déclaré.
+
+    snapshots: liste de (date, {ticker: nombre_reel_actions}), une entrée
+    par trimestre réellement déposé.
     """
-    holdings = hedge_fund_13f.get_13f_holdings(name)
-    if holdings.empty:
-        raise RuntimeError(f"[generate_report] Aucune position 13F trouvée pour '{name}'.")
+    history = hedge_fund_13f.get_13f_holdings_history(name, years=years)
+    if history.empty:
+        raise RuntimeError(f"[generate_report] Aucune position 13F trouvée pour '{name}' sur {years} ans.")
 
     print("[generate_report] Résolution des CUSIP en tickers via les données SEC Fails-to-Deliver...")
     cusip_map = cusip_resolver.build_cusip_to_ticker_map()
-    holdings["ticker"] = holdings["cusip"].map(cusip_map)
+    history["ticker"] = history["cusip"].map(cusip_map)
 
-    n_before = len(holdings)
-    holdings = holdings.dropna(subset=["ticker"])
-    n_after = len(holdings)
+    n_before = len(history)
+    history = history.dropna(subset=["ticker"])
+    n_after = len(history)
     if n_after < n_before:
         print(f"[generate_report] {n_before - n_after} position(s) sur {n_before} n'ont pas pu être "
               "résolues en ticker (CUSIP absent des données de référence) -- ignorées.")
 
-    if holdings.empty:
+    if history.empty:
         raise RuntimeError(
             f"[generate_report] Positions trouvées pour '{name}' mais aucun CUSIP n'a pu être "
             "résolu en ticker."
         )
 
-    real_shares = dict(zip(holdings["ticker"], holdings["shares"]))
-    report_date = pd.to_datetime(holdings["report_date"].iloc[0])
-    reported_total_value = holdings["value_usd"].sum()
-    return report_date, real_shares, reported_total_value
+    snapshots = []
+    for report_date, group in history.groupby("report_date"):
+        holdings = dict(zip(group["ticker"], group["shares"]))
+        snapshots.append((report_date, holdings))
+    snapshots.sort(key=lambda s: s[0])
+
+    first_date, first_holdings = snapshots[0]
+    first_total_value = history[history["report_date"] == first_date]["value_usd"].sum()
+
+    return snapshots, first_date, first_total_value
 
 
 def run_simulation(pilot_type: str, name: str):
@@ -130,11 +143,13 @@ def run_simulation(pilot_type: str, name: str):
         benchmark_df = _compute_benchmark_dca(trades)
 
     elif pilot_type == "hedge_fund":
-        report_date, real_shares, reported_value = _build_hedge_fund_holdings(name)
-        print(f"[generate_report] {len(real_shares)} positions réelles à reconstituer pour {name} "
-              f"(rapport du {report_date.date()}, valeur déclarée ~${reported_value:,.0f}).")
-        sim.set_initial_holdings(report_date, real_shares)
-        benchmark_df = _compute_benchmark_lump_sum(reported_value, report_date)
+        snapshots, first_date, first_value = _build_hedge_fund_timeline(name, years=HEDGE_FUND_YEARS)
+        n_tickers_total = len(set(t for _, h in snapshots for t in h.keys()))
+        print(f"[generate_report] {len(snapshots)} trimestres réels reconstitués pour {name} "
+              f"sur {HEDGE_FUND_YEARS} ans ({n_tickers_total} titres différents détenus au fil du temps, "
+              f"premier trimestre connu: {first_date.date()}, valeur déclarée alors ~${first_value:,.0f}).")
+        sim.set_holdings_timeline(snapshots)
+        benchmark_df = _compute_benchmark_lump_sum(first_value, first_date)
 
     else:
         raise ValueError(f"pilot_type doit être 'congress' ou 'hedge_fund', reçu: '{pilot_type}'")
@@ -208,7 +223,6 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
             "(sim.get_transaction_log()) pour comprendre pourquoi."
         )
 
-    # --- Graphique 1 : performance réelle vs S&P 500 ---
     fig, ax = plt.subplots(figsize=(11, 6))
     ax.plot(value_df["date"], value_df["total_value"], color="#1a3a5c", linewidth=2,
             label=f"Portefeuille réel de {name}")
@@ -224,7 +238,6 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
     plt.close(fig)
     print(f"[generate_report] Graphique de performance sauvegardé: {perf_path}")
 
-    # --- Graphique 2 : positions actuelles réelles ---
     positions = sim.get_current_positions()
     if not positions.empty:
         positions = positions.dropna(subset=["current_value"])
@@ -245,7 +258,6 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
         print("[generate_report] Aucune position actuelle exploitable à afficher "
               "(tout a été vendu, ou prix indisponible pour les positions restantes).")
 
-    # --- Export 3 : historique réel des mouvements ---
     log = sim.get_transaction_log()
     log_path = os.path.join(output_dir, f"{safe_name}_transactions.csv")
     log.to_csv(log_path, index=False)

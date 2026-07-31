@@ -1,5 +1,7 @@
-name: Générer le rapport pilot-tracker
-
+- name: Générer le rapport
+        env:
+          EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
+        run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
 on:
   workflow_dispatch:
     inputs:

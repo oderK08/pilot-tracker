@@ -16,7 +16,7 @@ légale de la donnée source, pas un choix de ce module) :
 """
 import pandas as pd
 
-from data_sources import congress_trades, hedge_fund_13f, cusip_resolver
+from data_sources import congress_trades, hedge_fund_13f, cusip_resolver, archive
 from data_sources.price_data import get_price_history, get_price_on_or_after
 from simulation.portfolio_simulator import PortfolioSimulator
 
@@ -26,11 +26,17 @@ HEDGE_FUND_YEARS = 5
 
 def build_congress_trades(name: str) -> pd.DataFrame:
     """
-    Normalise les transactions de congress-trading-monitor au format attendu
-    par le simulateur, avec le VRAI montant estimé (milieu de la fourchette
-    déclarée) pour chaque transaction.
+    Normalise les transactions au format attendu par le simulateur, avec le
+    VRAI montant estimé (milieu de la fourchette déclarée) pour chaque
+    transaction.
+
+    Fusionne systématiquement avec l'archive persistante locale (voir
+    data_sources/archive.py) : la source externe n'a qu'~1,5 an
+    d'historique glissant, donc SANS cette fusion on serait pour toujours
+    limité à cette fenêtre, même après des années d'utilisation.
     """
-    df = congress_trades.get_transactions_for_politician(name)
+    live_df = congress_trades.get_transactions_for_politician(name)
+    df = archive.merge_and_save("congress", name, live_df, archive.CONGRESS_DEDUP_KEYS)
 
     records = []
     for _, row in df.iterrows():
@@ -78,12 +84,19 @@ def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
     Retourne (snapshots, first_report_date, first_total_value) pour un
     gérant de fonds, à partir de TOUS ses dépôts 13F-HR sur `years` années.
 
+    Fusionne avec l'archive persistante locale -- moins critique que pour
+    le Congrès (la SEC garde ses archives indéfiniment), mais évite de
+    re-télécharger ~20 dépôts XML à chaque run pour un gérant suivi
+    régulièrement.
+
     snapshots: liste de (date, {ticker: nombre_reel_actions}), une entrée
     par trimestre réellement déposé.
     """
-    history = hedge_fund_13f.get_13f_holdings_history(name, years=years)
-    if history.empty:
+    live_history = hedge_fund_13f.get_13f_holdings_history(name, years=years)
+    if live_history.empty:
         raise RuntimeError(f"Aucune position 13F trouvée pour '{name}' sur {years} ans.")
+
+    history = archive.merge_and_save("hedge_fund", name, live_history, archive.HEDGE_FUND_DEDUP_KEYS)
 
     cusip_map = cusip_resolver.build_cusip_to_ticker_map()
     history["ticker"] = history["cusip"].map(cusip_map)

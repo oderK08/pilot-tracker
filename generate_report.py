@@ -38,14 +38,17 @@ def generate(pilot_type: str, name: str, output_dir: str = OUTPUT_DIR):
             "(sim.get_transaction_log()) pour comprendre pourquoi."
         )
 
-    # --- Graphique 1 : performance réelle vs S&P 500 ---
+    # --- Graphique 1 : performance réelle vs S&P 500 (normalisé à une base commune de 10 000$) ---
+    value_df_norm = core.normalize_to_base(value_df, "total_value", base=10_000)
+    benchmark_df_norm = core.normalize_to_base(benchmark_df, "benchmark_value", base=10_000) if not benchmark_df.empty else benchmark_df
+
     fig, ax = plt.subplots(figsize=(11, 6))
-    ax.plot(value_df["date"], value_df["total_value"], color="#1a3a5c", linewidth=2,
-            label=f"Portefeuille réel de {name}")
-    if not benchmark_df.empty:
-        ax.plot(benchmark_df["date"], benchmark_df["benchmark_value"], color="#888888",
-                linewidth=1.5, linestyle="--", label="S&P 500 (même capital, mêmes dates)")
-    ax.set_ylabel("Valeur du portefeuille ($)")
+    ax.plot(value_df_norm["date"], value_df_norm["total_value"], color="#1a3a5c", linewidth=2,
+            label=f"Portefeuille de {name}")
+    if not benchmark_df_norm.empty:
+        ax.plot(benchmark_df_norm["date"], benchmark_df_norm["benchmark_value"], color="#888888",
+                linewidth=1.5, linestyle="--", label="S&P 500 (base 10 000$ identique)")
+    ax.set_ylabel("Valeur (base 10 000$)")
     ax.set_title(f"Portefeuille réel reconstitué : {name}", fontsize=13, fontweight="bold", loc="left")
     ax.legend(loc="upper left", frameon=False)
     fig.tight_layout()

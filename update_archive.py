@@ -18,24 +18,39 @@ import core
 # ajouté ici commence à accumuler son propre historique dès le premier run
 # après son ajout (pas d'historique rétroactif possible au-delà de ce que la
 # source externe expose au moment de l'ajout).
+#
+# ⚠️ Les noms doivent correspondre à l'orthographe EXACTE utilisée dans la
+# source (voir find_most_active_congress.py pour vérifier) -- une
+# correspondance partielle insensible à la casse est utilisée, mais "Ro
+# Khanna" ne matche PAS "Rohit Khanna" (le vrai nom dans les données), par
+# exemple. Sélection basée sur le classement réel par nombre de
+# transactions (voir find_most_active_congress.py) -- Donald J Trump
+# (exécutif, pas Congrès) et Alan Armstrong (ratio transactions/titres
+# suspect, à vérifier avant d'ajouter) ont été volontairement exclus.
 TRACKED_CONGRESS = [
     "Nancy Pelosi",
-    "Dan Crenshaw",
-    "Josh Gottheimer",
-    "Ro Khanna",
-    "Michael McCaul",
+    "Michael T. McCaul",
+    "Rohit Khanna",
     "Markwayne Mullin",
+    "Josh Gottheimer",
+    "Gilbert Cisneros",
+    "John Phelan",
+    "David H McCormick",
+    "Scott H. Peters",
+    "April McClain Delaney",
+    "John Boozman",
 ]
 
 # Liste des gérants de fonds suivis en continu -- des institutionnels
 # majeurs et bien documentés, avec des styles de gestion différents
-# (value, quant, macro, growth) pour un panel varié.
+# (value, quant, macro, growth, AI-thématique) pour un panel varié.
 TRACKED_HEDGE_FUNDS = [
     "Berkshire Hathaway",
     "Bridgewater Associates",
     "Pershing Square Capital Management",
     "Scion Asset Management",
     "Duquesne Family Office",
+    "Situational Awareness",  # Leopold Aschenbrenner, CIK 0002045724
 ]
 
 

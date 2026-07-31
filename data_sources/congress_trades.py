@@ -28,9 +28,22 @@ import pandas as pd
 TRADES_URL = "https://raw.githubusercontent.com/kadoa-org/congress-trading-monitor/main/public/data/trades.json"
 TIMEOUT = 30
 
+_cached_df = None  # cache mémoire pour la durée du run -- voir get_all_trades()
 
-def get_all_trades() -> pd.DataFrame:
-    """Récupère toutes les transactions disponibles (tous filers confondus)."""
+
+def get_all_trades(force_refresh: bool = False) -> pd.DataFrame:
+    """
+    Récupère toutes les transactions disponibles (tous filers confondus).
+
+    Mis en cache en mémoire pour la durée du run : important maintenant
+    qu'on traite plusieurs politiciens dans le même script
+    (update_archive.py) -- sans ce cache, on retélécharge le même gros
+    fichier une fois par politicien suivi, pour rien.
+    """
+    global _cached_df
+    if _cached_df is not None and not force_refresh:
+        return _cached_df
+
     resp = requests.get(TRADES_URL, timeout=TIMEOUT)
     resp.raise_for_status()
     data = resp.json()
@@ -53,6 +66,7 @@ def get_all_trades() -> pd.DataFrame:
 
     df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce")
     df["filing_date"] = pd.to_datetime(df["filing_date"], errors="coerce")
+    _cached_df = df
     return df
 
 

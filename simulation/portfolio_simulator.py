@@ -64,7 +64,7 @@ class PortfolioSimulator:
                 price = get_price_on_or_after(self._get_price_series(ticker), as_of_date)
                 total += shares * price
             except Exception:
-                continue
+                continue  # prix indisponible à cette date -> ignoré
         return total
 
     def process_trades(self, trades: pd.DataFrame):
@@ -145,25 +145,53 @@ class PortfolioSimulator:
         simple cumul), pour refléter fidèlement les vrais changements de
         portefeuille d'un gérant d'un trimestre à l'autre.
 
+        Calcule aussi la DIFFÉRENCE avec le trimestre précédent pour chaque
+        titre, afin de journaliser explicitement s'il s'agit d'un
+        renforcement, d'une réduction, d'une nouvelle position ou d'une
+        position totalement clôturée -- sans ce calcul, chaque trimestre
+        apparaîtrait comme un simple "instantané" sans indiquer le sens du
+        mouvement (achat ou vente).
+
         Args:
             snapshots: liste de (date, {ticker: nombre_actions_reel}), pas
                 besoin d'être pré-triée (fait automatiquement)
         """
         self.holdings_timeline = sorted(snapshots, key=lambda s: s[0])
+        previous_holdings = {}
+
         for date, holdings in self.holdings_timeline:
-            for ticker, shares in holdings.items():
-                if shares <= 0:
-                    continue
+            all_tickers = set(holdings.keys()) | set(previous_holdings.keys())
+            for ticker in all_tickers:
+                shares_now = holdings.get(ticker, 0)
+                shares_before = previous_holdings.get(ticker, 0)
+                delta_shares = shares_now - shares_before
+
                 try:
                     price = get_price_on_or_after(self._get_price_series(ticker), date)
-                    value = shares * price
+                    value_now = shares_now * price
+                    delta_value = delta_shares * price
                 except Exception:
-                    price, value = None, None
+                    price, value_now, delta_value = None, None, None
+
+                if shares_before == 0 and shares_now > 0:
+                    action = "achat (nouvelle position)"
+                elif shares_now == 0 and shares_before > 0:
+                    action = "vente (position clôturée)"
+                elif delta_shares > 0:
+                    action = "achat (renforcement)"
+                elif delta_shares < 0:
+                    action = "vente (réduction)"
+                else:
+                    action = "position inchangée"
+
                 self.history.append({
-                    "date": date, "ticker": ticker, "action": "position 13F (trimestre)",
+                    "date": date, "ticker": ticker, "action": action,
                     "status": "exécuté", "price": price,
-                    "amount_usd": value, "shares": shares,
+                    "amount_usd": value_now, "shares": shares_now,
+                    "shares_change": delta_shares, "value_change_usd": delta_value,
                 })
+
+            previous_holdings = holdings
 
     def value_over_time(self, start_date=None, end_date=None, freq: str = "W") -> pd.DataFrame:
         """

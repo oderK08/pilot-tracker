@@ -251,12 +251,12 @@ def get_13f_holdings_history(name: str, years: int = DEFAULT_YEARS) -> pd.DataFr
 
     print(f"[hedge_fund_13f] {len(filings)} dépôts 13F-HR trouvés pour '{name}' sur {years} ans.")
 
-    all_records = []
+   all_records = []
     for filing in filings:
         try:
             xml_url = _find_information_table_url(cik, filing["accessionNumber"])
+            time.sleep(0.15)  # usage responsable de la SEC -- chaque dépôt = 2 requêtes (index + XML)
             resp = requests.get(xml_url, headers=HEADERS, timeout=TIMEOUT)
-            resp.raise_for_status()
             records = _parse_information_table(resp.content)
             for r in records:
                 r["report_date"] = filing["reportDate"]

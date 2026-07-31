@@ -36,18 +36,16 @@ OUTPUT_DIR = "output"
 
 
 def _build_congress_trades(name: str) -> pd.DataFrame:
-    """Normalise les transactions Quiver Quantitative au format attendu par le simulateur."""
+    """Normalise les transactions de congress-trading-monitor au format attendu par le simulateur."""
     df = congress_trades.get_transactions_for_politician(name)
-    if df.empty:
-        raise RuntimeError(f"[generate_report] Aucune transaction trouvée pour '{name}'.")
 
     records = []
     for _, row in df.iterrows():
-        ticker = row.get("Ticker")
-        if not ticker or ticker == "--":
-            continue
+        ticker = row.get("ticker")
+        if not ticker or pd.isna(ticker):
+            continue  # actif sans ticker identifiable (ex: obligation municipale) -> pas simulable
 
-        transaction_type = str(row.get("Transaction", "")).lower()
+        transaction_type = str(row.get("transaction_type", "")).lower()
         if "purchase" in transaction_type or "buy" in transaction_type:
             action = "buy"
         elif "sale" in transaction_type or "sell" in transaction_type:
@@ -55,7 +53,7 @@ def _build_congress_trades(name: str) -> pd.DataFrame:
         else:
             continue  # ex: "exchange", non géré par le simulateur
 
-        date = row.get("Filed") or row.get("TransactionDate")
+        date = row.get("filing_date") if pd.notna(row.get("filing_date")) else row.get("transaction_date")
         if pd.isna(date):
             continue
 

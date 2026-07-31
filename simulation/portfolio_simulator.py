@@ -26,26 +26,45 @@ from data_sources.price_data import get_price_history, get_price_on_or_after
 
 class PortfolioSimulator:
     def __init__(self):
-        self.holdings = {}       # ticker -> nombre RÉEL d'actions détenues
-        self.price_cache = {}    # ticker -> DataFrame de prix (mis en cache)
-        self.history = []        # historique de tous les mouvements (achats/ventes/positions initiales)
+        self.holdings = {}          # utilisé par process_trades (Congrès) -- état courant cumulatif
+        self.holdings_timeline = [] # utilisé par set_holdings_timeline (13F multi-trimestres) -- liste de (date, {ticker: shares}), triée
+        self.price_cache = {}       # ticker -> DataFrame de prix (mis en cache)
+        self.history = []           # historique de tous les mouvements (achats/ventes/positions/trimestres)
 
     def _get_price_series(self, ticker: str) -> pd.DataFrame:
         if ticker not in self.price_cache:
             self.price_cache[ticker] = get_price_history(ticker)
         return self.price_cache[ticker]
 
+    def _holdings_at(self, as_of_date) -> dict:
+        """
+        Retourne les positions actives à une date donnée.
+
+        Si une timeline de trimestres 13F a été fournie (set_holdings_timeline),
+        on prend le DERNIER trimestre connu à cette date ou avant (les
+        positions ne changent qu'aux dates de dépôt réelles, pas en continu).
+        Sinon, on utilise l'état cumulatif classique (cas Congrès).
+        """
+        if self.holdings_timeline:
+            as_of_date = pd.Timestamp(as_of_date)
+            applicable = [(d, h) for d, h in self.holdings_timeline if d <= as_of_date]
+            if not applicable:
+                return {}
+            return applicable[-1][1]
+        return self.holdings
+
     def total_value(self, as_of_date) -> float:
         """Valeur de marché réelle du portefeuille (actions détenues x prix) à une date donnée."""
+        holdings = self._holdings_at(as_of_date)
         total = 0.0
-        for ticker, shares in self.holdings.items():
+        for ticker, shares in holdings.items():
             if shares <= 0:
                 continue
             try:
                 price = get_price_on_or_after(self._get_price_series(ticker), as_of_date)
                 total += shares * price
             except Exception:
-                continue  # prix indisponible à cette date -> ignoré
+                continue
         return total
 
     def process_trades(self, trades: pd.DataFrame):
@@ -118,30 +137,33 @@ class PortfolioSimulator:
                     "price": price, "amount_usd": None, "shares": None,
                 })
 
-    def set_initial_holdings(self, date, holdings: dict):
+    def set_holdings_timeline(self, snapshots: list):
         """
-        Fixe directement les positions à leur nombre RÉEL et EXACT d'actions
-        (cas 13F : le dépôt donne le nombre d'actions détenues directement,
-        aucune estimation à partir d'un prix n'est nécessaire).
+        Fixe une SUITE de positions réelles dans le temps -- un trimestre 13F
+        après l'autre, chaque nouveau trimestre REMPLAÇANT entièrement les
+        positions précédentes sur les titres concernés (contrairement à un
+        simple cumul), pour refléter fidèlement les vrais changements de
+        portefeuille d'un gérant d'un trimestre à l'autre.
 
         Args:
-            date: date du rapport (pour le journal historique)
-            holdings: dict {ticker: nombre_actions_reel}
+            snapshots: liste de (date, {ticker: nombre_actions_reel}), pas
+                besoin d'être pré-triée (fait automatiquement)
         """
-        for ticker, shares in holdings.items():
-            if shares <= 0:
-                continue
-            self.holdings[ticker] = self.holdings.get(ticker, 0) + shares
-            try:
-                price = get_price_on_or_after(self._get_price_series(ticker), date)
-                value = shares * price
-            except Exception:
-                price, value = None, None
-            self.history.append({
-                "date": date, "ticker": ticker, "action": "position initiale (13F)",
-                "status": "exécuté", "price": price,
-                "amount_usd": value, "shares": shares,
-            })
+        self.holdings_timeline = sorted(snapshots, key=lambda s: s[0])
+        for date, holdings in self.holdings_timeline:
+            for ticker, shares in holdings.items():
+                if shares <= 0:
+                    continue
+                try:
+                    price = get_price_on_or_after(self._get_price_series(ticker), date)
+                    value = shares * price
+                except Exception:
+                    price, value = None, None
+                self.history.append({
+                    "date": date, "ticker": ticker, "action": "position 13F (trimestre)",
+                    "status": "exécuté", "price": price,
+                    "amount_usd": value, "shares": shares,
+                })
 
     def value_over_time(self, start_date=None, end_date=None, freq: str = "W") -> pd.DataFrame:
         """
@@ -169,8 +191,9 @@ class PortfolioSimulator:
     def get_current_positions(self) -> pd.DataFrame:
         """Retourne les positions actuellement suivies (hors positions à zéro), avec leur valeur réelle."""
         today = pd.Timestamp.today()
+        holdings = self._holdings_at(today)
         records = []
-        for ticker, shares in self.holdings.items():
+        for ticker, shares in holdings.items():
             if shares <= 0:
                 continue
             try:

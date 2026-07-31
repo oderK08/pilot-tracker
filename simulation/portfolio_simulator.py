@@ -2,18 +2,27 @@
 Reconstitue la valeur RÉELLE (pas simulée à échelle réduite) d'un
 portefeuille qui suit les positions déclarées d'un "pilote" (politicien ou
 gérant de fonds), à partir de vrais montants/quantités et de vrais prix
-historiques (Stooq).
+historiques.
 
 Deux sources, deux niveaux de précision différents (limite légale, pas un
 choix de modélisation) :
 - 13F (hedge funds) : le dépôt donne le nombre RÉEL et EXACT d'actions
   détenues -- on les utilise telles quelles, aucune estimation.
 - Congrès (STOCK Act) : la loi n'oblige à déclarer qu'une FOURCHETTE de
-  montant (ex: "$1,001 - $15,000"), jamais un montant exact ni un nombre
-  d'actions. Le montant réel investi est donc estimé au MILIEU de la
-  fourchette déclarée -- la meilleure estimation possible, mais une
-  estimation, pas un chiffre exact, parce que le gouvernement lui-même ne
-  rend pas le chiffre exact public.
+  montant, jamais un montant exact ni un nombre d'actions. Le montant réel
+  investi est donc estimé au MILIEU de la fourchette déclarée.
+
+⚠️ Point de conception CRITIQUE (bug corrigé) : la valeur du portefeuille à
+une date donnée doit toujours être calculée à partir des positions RÉELLEMENT
+DÉTENUES À CETTE DATE-LÀ, pas des positions finales après TOUTES les
+transactions traitées. Une version précédente utilisait un dict `self.holdings`
+muté en place au fil du traitement des transactions, puis interrogé après
+coup pour n'importe quelle date -- ce qui donnait des valeurs FAUSSES pour
+toute date antérieure à une vente (le dict reflétait déjà l'état final,
+post-vente, même quand on demandait la valeur à une date où la position
+était encore détenue). Toutes les valeurs sont maintenant dérivées d'une
+timeline explicite de positions (une entrée par changement réel), qu'on
+interroge à la bonne date à chaque fois.
 """
 import os
 import sys
@@ -26,10 +35,9 @@ from data_sources.price_data import get_price_history, get_price_on_or_after
 
 class PortfolioSimulator:
     def __init__(self):
-        self.holdings = {}          # utilisé par process_trades (Congrès) -- état courant cumulatif
-        self.holdings_timeline = [] # utilisé par set_holdings_timeline (13F multi-trimestres) -- liste de (date, {ticker: shares}), triée
-        self.price_cache = {}       # ticker -> DataFrame de prix (mis en cache)
-        self.history = []           # historique de tous les mouvements (achats/ventes/positions/trimestres)
+        self.holdings_timeline = []  # liste de (date, {ticker: shares}) -- état CUMULATIF après chaque événement, triée chronologiquement
+        self.price_cache = {}        # ticker -> DataFrame de prix (mis en cache)
+        self.history = []            # historique de tous les mouvements (achats/ventes/positions/trimestres)
 
     def _get_price_series(self, ticker: str) -> pd.DataFrame:
         if ticker not in self.price_cache:
@@ -38,23 +46,20 @@ class PortfolioSimulator:
 
     def _holdings_at(self, as_of_date) -> dict:
         """
-        Retourne les positions actives à une date donnée.
-
-        Si une timeline de trimestres 13F a été fournie (set_holdings_timeline),
-        on prend le DERNIER trimestre connu à cette date ou avant (les
-        positions ne changent qu'aux dates de dépôt réelles, pas en continu).
-        Sinon, on utilise l'état cumulatif classique (cas Congrès).
+        Retourne les positions RÉELLEMENT détenues à une date donnée -- le
+        dernier point de la timeline dont la date est <= as_of_date, pas
+        l'état final après toutes les transactions.
         """
-        if self.holdings_timeline:
-            as_of_date = pd.Timestamp(as_of_date)
-            applicable = [(d, h) for d, h in self.holdings_timeline if d <= as_of_date]
-            if not applicable:
-                return {}
-            return applicable[-1][1]
-        return self.holdings
+        if not self.holdings_timeline:
+            return {}
+        as_of_date = pd.Timestamp(as_of_date)
+        applicable = [(d, h) for d, h in self.holdings_timeline if d <= as_of_date]
+        if not applicable:
+            return {}
+        return applicable[-1][1]
 
     def total_value(self, as_of_date) -> float:
-        """Valeur de marché réelle du portefeuille (actions détenues x prix) à une date donnée."""
+        """Valeur de marché réelle du portefeuille (positions détenues À CETTE DATE x prix à cette date)."""
         holdings = self._holdings_at(as_of_date)
         total = 0.0
         for ticker, shares in holdings.items():
@@ -70,7 +75,9 @@ class PortfolioSimulator:
     def process_trades(self, trades: pd.DataFrame):
         """
         Traite une liste de transactions RÉELLES (montants estimés au milieu
-        de la fourchette déclarée pour le Congrès).
+        de la fourchette déclarée pour le Congrès), en enregistrant un point
+        de la timeline après CHAQUE transaction exécutée -- pas seulement
+        l'état final.
 
         Args:
             trades: DataFrame avec colonnes obligatoires:
@@ -80,6 +87,7 @@ class PortfolioSimulator:
                 - dollar_amount: montant réel estimé de la transaction (pour un achat)
         """
         trades = trades.sort_values("date").reset_index(drop=True)
+        current_holdings = {}
 
         for _, trade in trades.iterrows():
             date = trade["date"]
@@ -107,15 +115,16 @@ class PortfolioSimulator:
                     })
                     continue
                 shares_bought = dollar_amount / price
-                self.holdings[ticker] = self.holdings.get(ticker, 0) + shares_bought
+                current_holdings[ticker] = current_holdings.get(ticker, 0) + shares_bought
                 self.history.append({
                     "date": date, "ticker": ticker, "action": "buy",
                     "status": "exécuté", "price": price,
                     "amount_usd": dollar_amount, "shares": shares_bought,
                 })
+                self.holdings_timeline.append((date, dict(current_holdings)))
 
             elif action == "sell":
-                shares_held = self.holdings.get(ticker, 0)
+                shares_held = current_holdings.get(ticker, 0)
                 if shares_held <= 0:
                     self.history.append({
                         "date": date, "ticker": ticker, "action": "sell",
@@ -124,18 +133,21 @@ class PortfolioSimulator:
                     })
                     continue
                 proceeds = shares_held * price
-                self.holdings[ticker] = 0
+                current_holdings[ticker] = 0
                 self.history.append({
                     "date": date, "ticker": ticker, "action": "sell",
                     "status": "exécuté", "price": price,
                     "amount_usd": proceeds, "shares": shares_held,
                 })
+                self.holdings_timeline.append((date, dict(current_holdings)))
             else:
                 self.history.append({
                     "date": date, "ticker": ticker, "action": action,
                     "status": f"ignoré (action inconnue: '{action}')",
                     "price": price, "amount_usd": None, "shares": None,
                 })
+
+        self.holdings_timeline.sort(key=lambda s: s[0])
 
     def set_holdings_timeline(self, snapshots: list):
         """
@@ -148,18 +160,18 @@ class PortfolioSimulator:
         Calcule aussi la DIFFÉRENCE avec le trimestre précédent pour chaque
         titre, afin de journaliser explicitement s'il s'agit d'un
         renforcement, d'une réduction, d'une nouvelle position ou d'une
-        position totalement clôturée -- sans ce calcul, chaque trimestre
-        apparaîtrait comme un simple "instantané" sans indiquer le sens du
-        mouvement (achat ou vente).
+        position totalement clôturée.
 
         Args:
             snapshots: liste de (date, {ticker: nombre_actions_reel}), pas
                 besoin d'être pré-triée (fait automatiquement)
         """
-        self.holdings_timeline = sorted(snapshots, key=lambda s: s[0])
-        previous_holdings = {}
+        new_snapshots = sorted(snapshots, key=lambda s: s[0])
+        self.holdings_timeline.extend(new_snapshots)
+        self.holdings_timeline.sort(key=lambda s: s[0])
 
-        for date, holdings in self.holdings_timeline:
+        previous_holdings = {}
+        for date, holdings in new_snapshots:
             all_tickers = set(holdings.keys()) | set(previous_holdings.keys())
             for ticker in all_tickers:
                 shares_now = holdings.get(ticker, 0)
@@ -196,8 +208,10 @@ class PortfolioSimulator:
     def value_over_time(self, start_date=None, end_date=None, freq: str = "D") -> pd.DataFrame:
         """
         Calcule la valeur réelle du portefeuille à intervalles réguliers
-        (hebdomadaire par défaut) entre le premier mouvement exécuté et
-        aujourd'hui (ou end_date si fourni).
+        (quotidien par défaut) entre le premier mouvement exécuté et
+        aujourd'hui (ou end_date si fourni) -- en utilisant, pour CHAQUE
+        date, les positions réellement détenues à CETTE date précise (voir
+        _holdings_at), pas l'état final.
         """
         executed = [h for h in self.history if h.get("status") == "exécuté"]
         if not executed:

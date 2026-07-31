@@ -136,36 +136,27 @@ def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
 
 def compute_benchmark_dca(trades: pd.DataFrame) -> pd.DataFrame:
     """
-    Benchmark pour le cas Congrès : "si les MÊMES montants réels, aux MÊMES
-    dates réelles, avaient été investis dans le S&P 500 (SPY)" -- achat
-    progressif (dollar-cost averaging) suivant le calendrier réel des achats.
+    Benchmark pour le cas Congrès : "si les MÊMES transactions réelles
+    (mêmes montants, mêmes dates, achats ET ventes) avaient porté sur le
+    S&P 500 (SPY) plutôt que sur les titres réellement déclarés".
+
+    Réutilise le même PortfolioSimulator que le portefeuille réel, en
+    substituant simplement SPY à chaque ticker -- garantit que les VENTES
+    sont gérées symétriquement aux achats. Un ancien calcul ne prenait en
+    compte que les achats (accumulation infinie, jamais réduite par une
+    vente), ce qui créait un repère absurde et toujours croissant pour les
+    profils à fort roulement (beaucoup d'allers-retours achat/vente).
     """
-    buys = trades[trades["action"] == "buy"].dropna(subset=["dollar_amount"])
-    if buys.empty:
+    if trades.empty:
         return pd.DataFrame(columns=["date", "benchmark_value"])
 
-    spy_prices = get_price_history(BENCHMARK_TICKER, start=str(buys["date"].min().date()))
+    spy_trades = trades.copy()
+    spy_trades["ticker"] = BENCHMARK_TICKER
 
-    end_date = pd.Timestamp.today()
-    dates = pd.date_range(buys["date"].min(), end_date, freq="D")
-    records = []
-    buys_sorted = buys.sort_values("date")
-    for d in dates:
-        cumulative_shares = 0.0
-        for _, trade in buys_sorted[buys_sorted["date"] <= d].iterrows():
-            try:
-                price = get_price_on_or_after(spy_prices, trade["date"])
-                cumulative_shares += trade["dollar_amount"] / price
-            except Exception:
-                continue
-        try:
-            current_price = get_price_on_or_after(spy_prices, d)
-            records.append({"date": d, "benchmark_value": cumulative_shares * current_price})
-        except Exception:
-            continue
-
-    return pd.DataFrame(records)
-
+    benchmark_sim = PortfolioSimulator()
+    benchmark_sim.process_trades(spy_trades)
+    value_df = benchmark_sim.value_over_time()
+    return value_df.rename(columns={"total_value": "benchmark_value"})
 
 def compute_benchmark_lump_sum(amount: float, start_date) -> pd.DataFrame:
     """

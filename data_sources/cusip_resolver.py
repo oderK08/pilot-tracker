@@ -25,8 +25,15 @@ BASE_URL = "https://www.sec.gov/files/data/fails-deliver-data"
 TIMEOUT = 60
 
 # La SEC exige un User-Agent identifiable sur ses requêtes, comme pour EDGAR.
-HEADERS = {"User-Agent": "pilot-tracker (usage personnel non-commercial)"}
-
+# La SEC exige un User-Agent identifiable sur ses requêtes, comme pour EDGAR
+# -- même variable d'environnement que dans hedge_fund_13f.py et le projet
+# research-dashboard principal.
+EDGAR_USER_AGENT = os.environ.get("EDGAR_USER_AGENT", "")
+if not EDGAR_USER_AGENT:
+    print("[cusip_resolver] ATTENTION: EDGAR_USER_AGENT n'est pas définie. "
+          "La SEC exige un User-Agent identifiable (nom + email), sinon les requêtes "
+          "seront bloquées avec une erreur 403.")
+HEADERS = {"User-Agent": EDGAR_USER_AGENT or "pilot-tracker contact@example.com"}
 
 def _build_url(year: int, month: int, half: str) -> str:
     return f"{BASE_URL}/cnsfails{year}{month:02d}{half}.zip"

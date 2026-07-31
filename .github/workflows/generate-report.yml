@@ -34,6 +34,7 @@ jobs:
       - name: Générer le rapport
         env:
           EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
         run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
 
       - name: Sauvegarder les résultats dans le repo

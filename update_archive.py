@@ -20,11 +20,22 @@ import core
 # source externe expose au moment de l'ajout).
 TRACKED_CONGRESS = [
     "Nancy Pelosi",
+    "Dan Crenshaw",
+    "Josh Gottheimer",
+    "Ro Khanna",
+    "Michael McCaul",
+    "Markwayne Mullin",
 ]
 
-# Liste des gérants de fonds suivis en continu.
+# Liste des gérants de fonds suivis en continu -- des institutionnels
+# majeurs et bien documentés, avec des styles de gestion différents
+# (value, quant, macro, growth) pour un panel varié.
 TRACKED_HEDGE_FUNDS = [
     "Berkshire Hathaway",
+    "Bridgewater Associates",
+    "Pershing Square Capital Management",
+    "Scion Asset Management",
+    "Duquesne Family Office",
 ]
 
 

@@ -193,7 +193,7 @@ class PortfolioSimulator:
 
             previous_holdings = holdings
 
-    def value_over_time(self, start_date=None, end_date=None, freq: str = "W") -> pd.DataFrame:
+    def value_over_time(self, start_date=None, end_date=None, freq: str = "D") -> pd.DataFrame:
         """
         Calcule la valeur réelle du portefeuille à intervalles réguliers
         (hebdomadaire par défaut) entre le premier mouvement exécuté et

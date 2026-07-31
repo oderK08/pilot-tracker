@@ -1,22 +1,19 @@
 """
-Simulateur de portefeuille virtuel qui copie les transactions d'un
-"pilote" (politicien ou gérant de fonds), sans connecter de vrai compte de
-courtage -- calcule uniquement la valeur théorique dans le temps à partir
-de vrais prix historiques (Stooq).
+Reconstitue la valeur RÉELLE (pas simulée à échelle réduite) d'un
+portefeuille qui suit les positions déclarées d'un "pilote" (politicien ou
+gérant de fonds), à partir de vrais montants/quantités et de vrais prix
+historiques (Stooq).
 
-Règle de simulation (simplification assumée et documentée clairement) :
-- Un ACHAT investit une fraction fixe (par défaut 10%) de la valeur totale
-  actuelle du portefeuille virtuel dans le titre concerné, au prix du jour
-  de divulgation (transaction Congrès) ou de rapport (13F).
-- Une VENTE liquide l'intégralité de la position existante sur ce titre.
-
-Pourquoi une fraction fixe plutôt que le montant exact déclaré : les
-montants déclarés sont à une échelle totalement différente du capital
-virtuel de départ (fourchettes du STOCK Act en millions de $, positions 13F
-en dizaines/centaines de millions) -- copier le montant exact n'aurait
-aucun sens pour un portefeuille de test à 10 000$. La fraction fixe permet
-de répliquer fidèlement la STRUCTURE des décisions (quels titres, à quel
-moment) sans prétendre reproduire l'échelle réelle des transactions.
+Deux sources, deux niveaux de précision différents (limite légale, pas un
+choix de modélisation) :
+- 13F (hedge funds) : le dépôt donne le nombre RÉEL et EXACT d'actions
+  détenues -- on les utilise telles quelles, aucune estimation.
+- Congrès (STOCK Act) : la loi n'oblige à déclarer qu'une FOURCHETTE de
+  montant (ex: "$1,001 - $15,000"), jamais un montant exact ni un nombre
+  d'actions. Le montant réel investi est donc estimé au MILIEU de la
+  fourchette déclarée -- la meilleure estimation possible, mais une
+  estimation, pas un chiffre exact, parce que le gouvernement lui-même ne
+  rend pas le chiffre exact public.
 """
 import os
 import sys
@@ -28,26 +25,18 @@ from data_sources.price_data import get_price_history, get_price_on_or_after
 
 
 class PortfolioSimulator:
-    def __init__(self, starting_cash: float = 10_000.0, buy_fraction: float = 0.10):
-        """
-        Args:
-            starting_cash: capital virtuel de départ
-            buy_fraction: fraction de la valeur totale du portefeuille
-                investie à chaque achat simulé (défaut 10%)
-        """
-        self.starting_cash = starting_cash
-        self.buy_fraction = buy_fraction
-        self.cash = starting_cash
-        self.holdings = {}       # ticker -> nombre d'actions détenues
-        self.price_cache = {}    # ticker -> DataFrame de prix (mis en cache, pas retéléchargé à chaque appel)
-        self.history = []        # historique de TOUTES les transactions tentées (exécutées ou non)
+    def __init__(self):
+        self.holdings = {}       # ticker -> nombre RÉEL d'actions détenues
+        self.price_cache = {}    # ticker -> DataFrame de prix (mis en cache)
+        self.history = []        # historique de tous les mouvements (achats/ventes/positions initiales)
 
     def _get_price_series(self, ticker: str) -> pd.DataFrame:
         if ticker not in self.price_cache:
             self.price_cache[ticker] = get_price_history(ticker)
         return self.price_cache[ticker]
 
-    def _current_holdings_value(self, as_of_date) -> float:
+    def total_value(self, as_of_date) -> float:
+        """Valeur de marché réelle du portefeuille (actions détenues x prix) à une date donnée."""
         total = 0.0
         for ticker, shares in self.holdings.items():
             if shares <= 0:
@@ -56,22 +45,20 @@ class PortfolioSimulator:
                 price = get_price_on_or_after(self._get_price_series(ticker), as_of_date)
                 total += shares * price
             except Exception:
-                continue  # prix indisponible à cette date (ex: titre pas encore coté à l'époque) -> ignoré
+                continue  # prix indisponible à cette date -> ignoré
         return total
-
-    def total_value(self, as_of_date) -> float:
-        """Valeur totale du portefeuille (liquidités + positions) à une date donnée."""
-        return self.cash + self._current_holdings_value(as_of_date)
 
     def process_trades(self, trades: pd.DataFrame):
         """
-        Traite une liste de transactions à simuler.
+        Traite une liste de transactions RÉELLES (montants estimés au milieu
+        de la fourchette déclarée pour le Congrès).
 
         Args:
             trades: DataFrame avec colonnes obligatoires:
-                - date: date à laquelle simuler l'action (date de divulgation, pas la date réelle de trade)
+                - date: date de divulgation (pas la date réelle du trade)
                 - ticker: symbole boursier
                 - action: "buy" ou "sell"
+                - dollar_amount: montant réel estimé de la transaction (pour un achat)
         """
         trades = trades.sort_values("date").reset_index(drop=True)
 
@@ -79,6 +66,7 @@ class PortfolioSimulator:
             date = trade["date"]
             ticker = trade["ticker"]
             action = str(trade["action"]).lower()
+            dollar_amount = trade.get("dollar_amount")
 
             try:
                 price_series = self._get_price_series(ticker)
@@ -92,9 +80,37 @@ class PortfolioSimulator:
                 continue
 
             if action == "buy":
-                self._execute_buy(date, ticker, price)
+                if not dollar_amount or dollar_amount <= 0:
+                    self.history.append({
+                        "date": date, "ticker": ticker, "action": "buy",
+                        "status": "ignoré (montant manquant)",
+                        "price": price, "amount_usd": None, "shares": None,
+                    })
+                    continue
+                shares_bought = dollar_amount / price
+                self.holdings[ticker] = self.holdings.get(ticker, 0) + shares_bought
+                self.history.append({
+                    "date": date, "ticker": ticker, "action": "buy",
+                    "status": "exécuté", "price": price,
+                    "amount_usd": dollar_amount, "shares": shares_bought,
+                })
+
             elif action == "sell":
-                self._execute_sell(date, ticker, price)
+                shares_held = self.holdings.get(ticker, 0)
+                if shares_held <= 0:
+                    self.history.append({
+                        "date": date, "ticker": ticker, "action": "sell",
+                        "status": "ignoré (aucune position suivie à vendre)",
+                        "price": price, "amount_usd": None, "shares": None,
+                    })
+                    continue
+                proceeds = shares_held * price
+                self.holdings[ticker] = 0
+                self.history.append({
+                    "date": date, "ticker": ticker, "action": "sell",
+                    "status": "exécuté", "price": price,
+                    "amount_usd": proceeds, "shares": shares_held,
+                })
             else:
                 self.history.append({
                     "date": date, "ticker": ticker, "action": action,
@@ -102,50 +118,35 @@ class PortfolioSimulator:
                     "price": price, "amount_usd": None, "shares": None,
                 })
 
-    def _execute_buy(self, date, ticker, price):
-        portfolio_value = self.total_value(date)
-        amount_to_invest = min(portfolio_value * self.buy_fraction, self.cash)
+    def set_initial_holdings(self, date, holdings: dict):
+        """
+        Fixe directement les positions à leur nombre RÉEL et EXACT d'actions
+        (cas 13F : le dépôt donne le nombre d'actions détenues directement,
+        aucune estimation à partir d'un prix n'est nécessaire).
 
-        if amount_to_invest <= 0:
+        Args:
+            date: date du rapport (pour le journal historique)
+            holdings: dict {ticker: nombre_actions_reel}
+        """
+        for ticker, shares in holdings.items():
+            if shares <= 0:
+                continue
+            self.holdings[ticker] = self.holdings.get(ticker, 0) + shares
+            try:
+                price = get_price_on_or_after(self._get_price_series(ticker), date)
+                value = shares * price
+            except Exception:
+                price, value = None, None
             self.history.append({
-                "date": date, "ticker": ticker, "action": "buy",
-                "status": "ignoré (pas de liquidités disponibles)",
-                "price": price, "amount_usd": None, "shares": None,
+                "date": date, "ticker": ticker, "action": "position initiale (13F)",
+                "status": "exécuté", "price": price,
+                "amount_usd": value, "shares": shares,
             })
-            return
-
-        shares_bought = amount_to_invest / price
-        self.holdings[ticker] = self.holdings.get(ticker, 0) + shares_bought
-        self.cash -= amount_to_invest
-        self.history.append({
-            "date": date, "ticker": ticker, "action": "buy",
-            "status": "exécuté", "price": price,
-            "amount_usd": amount_to_invest, "shares": shares_bought,
-        })
-
-    def _execute_sell(self, date, ticker, price):
-        shares_held = self.holdings.get(ticker, 0)
-        if shares_held <= 0:
-            self.history.append({
-                "date": date, "ticker": ticker, "action": "sell",
-                "status": "ignoré (aucune position détenue à vendre)",
-                "price": price, "amount_usd": None, "shares": None,
-            })
-            return
-
-        proceeds = shares_held * price
-        self.cash += proceeds
-        self.holdings[ticker] = 0
-        self.history.append({
-            "date": date, "ticker": ticker, "action": "sell",
-            "status": "exécuté", "price": price,
-            "amount_usd": proceeds, "shares": shares_held,
-        })
 
     def value_over_time(self, start_date=None, end_date=None, freq: str = "W") -> pd.DataFrame:
         """
-        Calcule la valeur totale du portefeuille à intervalles réguliers
-        (hebdomadaire par défaut) entre la première transaction exécutée et
+        Calcule la valeur réelle du portefeuille à intervalles réguliers
+        (hebdomadaire par défaut) entre le premier mouvement exécuté et
         aujourd'hui (ou end_date si fourni).
         """
         executed = [h for h in self.history if h.get("status") == "exécuté"]
@@ -161,56 +162,12 @@ class PortfolioSimulator:
         records = [{"date": d, "total_value": self.total_value(d)} for d in dates]
         return pd.DataFrame(records)
 
-    def invest_by_weights(self, date, weights: dict):
-        """
-        Investit le portefeuille selon une répartition de poids donnée, en
-        une seule fois -- adapté au cas d'un instantané 13F (plusieurs
-        dizaines de positions à la MÊME date), contrairement à
-        process_trades() qui traite des achats séquentiels dans le temps
-        (adapté aux transactions Congrès, étalées sur plusieurs mois/années).
-
-        Appliquer la règle séquentielle "10% du portefeuille restant" à un
-        13F ferait fondre artificiellement les montants investis sur les
-        dernières positions de la liste -- ici, chaque position reçoit
-        directement (poids * liquidités disponibles), sans dépendre de
-        l'ordre de traitement.
-
-        Args:
-            date: date à laquelle simuler l'investissement (date du rapport 13F)
-            weights: dict {ticker: poids}, les poids n'ont pas besoin de
-                sommer à 1 (ex: 0.5 = 50% des liquidités disponibles sur ce titre)
-        """
-        available_cash = self.cash
-        for ticker, weight in weights.items():
-            amount_to_invest = available_cash * weight
-            if amount_to_invest <= 0:
-                continue
-            try:
-                price_series = self._get_price_series(ticker)
-                price = get_price_on_or_after(price_series, date)
-            except Exception as e:
-                self.history.append({
-                    "date": date, "ticker": ticker, "action": "buy",
-                    "status": "ignoré (prix indisponible)", "detail": str(e),
-                    "price": None, "amount_usd": None, "shares": None,
-                })
-                continue
-
-            shares_bought = amount_to_invest / price
-            self.holdings[ticker] = self.holdings.get(ticker, 0) + shares_bought
-            self.cash -= amount_to_invest
-            self.history.append({
-                "date": date, "ticker": ticker, "action": "buy",
-                "status": "exécuté", "price": price,
-                "amount_usd": amount_to_invest, "shares": shares_bought,
-            })
-
     def get_transaction_log(self) -> pd.DataFrame:
-        """Retourne l'historique complet des transactions tentées (exécutées ou non, avec la raison)."""
+        """Retourne l'historique complet des mouvements (exécutés ou non, avec la raison)."""
         return pd.DataFrame(self.history)
 
     def get_current_positions(self) -> pd.DataFrame:
-        """Retourne les positions actuellement détenues (hors positions à zéro)."""
+        """Retourne les positions actuellement suivies (hors positions à zéro), avec leur valeur réelle."""
         today = pd.Timestamp.today()
         records = []
         for ticker, shares in self.holdings.items():

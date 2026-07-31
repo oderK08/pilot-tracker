@@ -15,6 +15,7 @@ séparées par "|"), zippé, avec les colonnes SETTLEMENT DATE | CUSIP |
 SYMBOL | QUANTITY (FAILS) | DESCRIPTION | PRICE.
 """
 import io
+import json
 import os
 import zipfile
 from datetime import datetime, timedelta
@@ -25,7 +26,13 @@ import pandas as pd
 BASE_URL = "https://www.sec.gov/files/data/fails-deliver-data"
 TIMEOUT = 60
 
-# La SEC exige un User-Agent identifiable sur ses requêtes, comme pour EDGAR.
+# Cache disque -- ce fichier ne change que 2 fois par mois côté SEC, donc
+# pas besoin de le retélécharger à chaque appel. Sans ce cache, chaque
+# recherche d'un fonds (13F) devait re-télécharger et re-parser ce fichier
+# volumineux, une source majeure de lenteur perçue par l'utilisateur.
+CACHE_PATH = os.path.join(os.path.dirname(__file__), "..", "data_archive", "cusip_map_cache.json")
+CACHE_MAX_AGE_DAYS = 7
+
 # La SEC exige un User-Agent identifiable sur ses requêtes, comme pour EDGAR
 # -- même variable d'environnement que dans hedge_fund_13f.py et le projet
 # research-dashboard principal.
@@ -35,6 +42,7 @@ if not EDGAR_USER_AGENT:
           "La SEC exige un User-Agent identifiable (nom + email), sinon les requêtes "
           "seront bloquées avec une erreur 403.")
 HEADERS = {"User-Agent": EDGAR_USER_AGENT or "pilot-tracker contact@example.com"}
+
 
 def _build_url(year: int, month: int, half: str) -> str:
     return f"{BASE_URL}/cnsfails{year}{month:02d}{half}.zip"
@@ -100,21 +108,51 @@ def _parse_cusip_ticker_file(zip_content: bytes) -> pd.DataFrame:
     return df
 
 
-def build_cusip_to_ticker_map() -> dict:
+def _load_disk_cache() -> dict:
+    """Charge le cache disque s'il existe et n'est pas trop vieux, sinon retourne None."""
+    if not os.path.exists(CACHE_PATH):
+        return None
+    try:
+        with open(CACHE_PATH, "r", encoding="utf-8") as f:
+            cached = json.load(f)
+        cached_at = datetime.fromisoformat(cached["cached_at"])
+        if datetime.today() - cached_at > timedelta(days=CACHE_MAX_AGE_DAYS):
+            return None  # cache trop vieux, on va rafraîchir
+        return cached["mapping"]
+    except Exception:
+        return None  # cache corrompu/illisible -> on retélécharge, pas d'erreur bloquante
+
+
+def _save_disk_cache(mapping: dict):
+    os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
+    with open(CACHE_PATH, "w", encoding="utf-8") as f:
+        json.dump({"cached_at": datetime.today().isoformat(), "mapping": mapping}, f)
+
+
+def build_cusip_to_ticker_map(force_refresh: bool = False) -> dict:
     """
-    Télécharge le fichier Fails-to-Deliver le plus récent disponible et
-    construit un dict {cusip: ticker}.
+    Construit un dict {cusip: ticker} à partir du fichier Fails-to-Deliver
+    de la SEC le plus récent -- lu depuis un cache disque si disponible et
+    récent (moins de 7 jours), sinon retéléchargé et re-mis en cache.
 
     En cas de doublons (un même CUSIP apparaissant plusieurs fois dans le
     fichier, ex: plusieurs dates de règlement), on garde la dernière
     occurrence trouvée.
     """
+    if not force_refresh:
+        cached = _load_disk_cache()
+        if cached is not None:
+            return cached
+
     content = _find_latest_available_file()
     df = _parse_cusip_ticker_file(content)
 
     df = df.dropna(subset=["CUSIP", "SYMBOL"])
     df = df.drop_duplicates(subset="CUSIP", keep="last")
-    return dict(zip(df["CUSIP"], df["SYMBOL"]))
+    mapping = dict(zip(df["CUSIP"], df["SYMBOL"]))
+
+    _save_disk_cache(mapping)
+    return mapping
 
 
 if __name__ == "__main__":

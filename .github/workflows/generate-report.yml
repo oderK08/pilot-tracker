@@ -1,7 +1,5 @@
-- name: Générer le rapport
-        env:
-          EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
-        run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
+name: Générer le rapport pilot-tracker
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,6 +32,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Générer le rapport
+        env:
+          EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
         run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
 
       - name: Sauvegarder les résultats dans le repo

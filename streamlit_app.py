@@ -93,22 +93,30 @@ if run and name:
         col3.metric("Écart vs S&P 500", f"{diff_pct:+.1f}%",
                     delta=f"{diff_pct:+.1f}%", delta_color="normal")
 
-    # --- Graphique de performance interactif ---
+    # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
     st.subheader("Performance réelle dans le temps")
+    st.caption(
+        "Les deux courbes sont indexées à une base commune de 10 000$ au départ, pour comparer "
+        "des **performances** plutôt que des montants absolus (le portefeuille réel et le repère "
+        "théorique n'ont pas la même échelle en dollars)."
+    )
+    value_df_norm = core.normalize_to_base(value_df, "total_value", base=10_000)
+    benchmark_df_norm = core.normalize_to_base(benchmark_df, "benchmark_value", base=10_000) if not benchmark_df.empty else benchmark_df
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=value_df["date"], y=value_df["total_value"],
-        name=f"Portefeuille de {name}", line=dict(color="#1a3a5c", width=2.5),
+        x=value_df_norm["date"], y=value_df_norm["total_value"],
+        name=f"Portefeuille de {name}", line=dict(color="#1a3a5c", width=2),
     ))
-    if not benchmark_df.empty:
+    if not benchmark_df_norm.empty:
         fig.add_trace(go.Scatter(
-            x=benchmark_df["date"], y=benchmark_df["benchmark_value"],
-            name="S&P 500 (même capital, mêmes dates)",
+            x=benchmark_df_norm["date"], y=benchmark_df_norm["benchmark_value"],
+            name="S&P 500 (base 10 000$ identique)",
             line=dict(color="#888888", width=1.5, dash="dash"),
         ))
     fig.update_layout(
         hovermode="x unified", height=450,
-        yaxis_title="Valeur ($)", margin=dict(l=0, r=0, t=10, b=0),
+        yaxis_title="Valeur (base 10 000$)", margin=dict(l=0, r=0, t=10, b=0),
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
     st.plotly_chart(fig, use_container_width=True)

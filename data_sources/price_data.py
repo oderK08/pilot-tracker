@@ -35,22 +35,28 @@ def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.Dat
 
     Args:
         ticker: ex "AAPL" (le suffixe ".us" est ajouté automatiquement si absent)
-        start: date de début au format "YYYY-MM-DD" (optionnel, tout l'historique sinon)
-        end: date de fin au format "YYYY-MM-DD" (optionnel, aujourd'hui par défaut)
+        start: date de début au format "YYYY-MM-DD" (optionnel, filtre appliqué APRÈS
+            téléchargement, pas envoyé à Stooq -- voir note ci-dessous)
+        end: date de fin au format "YYYY-MM-DD" (idem)
 
     Returns:
         DataFrame avec colonnes: date, close
+
+    Note technique : on ne transmet PAS les paramètres de plage de dates
+    (d1/d2) à Stooq -- un test réel a montré une erreur 404 lors de l'usage
+    du paramètre d1 seul pour certains tickers (ex: SPY), et ce comportement
+    n'a pas pu être vérifié davantage (domaine non testable en direct depuis
+    l'environnement de développement). Récupérer tout l'historique puis
+    filtrer nous-mêmes en local est plus lent mais beaucoup plus robuste,
+    puisqu'on ne dépend plus d'un comportement d'API qu'on ne peut pas
+    valider.
 
     Lève une exception claire si le ticker est introuvable ou si Stooq ne
     renvoie aucune donnée (au lieu de silencieusement renvoyer un DataFrame
     vide qui ferait planter les calculs plus loin sans message clair).
     """
     stooq_ticker = _normalize_ticker(ticker)
-    params = {"s": stooq_ticker, "i": "d"}  # i=d -> fréquence quotidienne
-    if start:
-        params["d1"] = start.replace("-", "")
-    if end:
-        params["d2"] = end.replace("-", "")
+    params = {"s": stooq_ticker, "i": "d"}  # i=d -> fréquence quotidienne, pas de d1/d2
 
     resp = requests.get(BASE_URL, params=params, timeout=TIMEOUT)
     resp.raise_for_status()
@@ -72,7 +78,14 @@ def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.Dat
 
     df = df.rename(columns={"Date": "date", "Close": "close"})
     df["date"] = pd.to_datetime(df["date"])
-    return df[["date", "close"]].sort_values("date").reset_index(drop=True)
+    df = df[["date", "close"]].sort_values("date").reset_index(drop=True)
+
+    if start:
+        df = df[df["date"] >= pd.Timestamp(start)]
+    if end:
+        df = df[df["date"] <= pd.Timestamp(end)]
+
+    return df.reset_index(drop=True)
 
 
 def get_price_on_or_after(price_history: pd.DataFrame, target_date) -> float:

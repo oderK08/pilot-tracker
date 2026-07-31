@@ -161,6 +161,50 @@ class PortfolioSimulator:
         records = [{"date": d, "total_value": self.total_value(d)} for d in dates]
         return pd.DataFrame(records)
 
+    def invest_by_weights(self, date, weights: dict):
+        """
+        Investit le portefeuille selon une répartition de poids donnée, en
+        une seule fois -- adapté au cas d'un instantané 13F (plusieurs
+        dizaines de positions à la MÊME date), contrairement à
+        process_trades() qui traite des achats séquentiels dans le temps
+        (adapté aux transactions Congrès, étalées sur plusieurs mois/années).
+
+        Appliquer la règle séquentielle "10% du portefeuille restant" à un
+        13F ferait fondre artificiellement les montants investis sur les
+        dernières positions de la liste -- ici, chaque position reçoit
+        directement (poids * liquidités disponibles), sans dépendre de
+        l'ordre de traitement.
+
+        Args:
+            date: date à laquelle simuler l'investissement (date du rapport 13F)
+            weights: dict {ticker: poids}, les poids n'ont pas besoin de
+                sommer à 1 (ex: 0.5 = 50% des liquidités disponibles sur ce titre)
+        """
+        available_cash = self.cash
+        for ticker, weight in weights.items():
+            amount_to_invest = available_cash * weight
+            if amount_to_invest <= 0:
+                continue
+            try:
+                price_series = self._get_price_series(ticker)
+                price = get_price_on_or_after(price_series, date)
+            except Exception as e:
+                self.history.append({
+                    "date": date, "ticker": ticker, "action": "buy",
+                    "status": "ignoré (prix indisponible)", "detail": str(e),
+                    "price": None, "amount_usd": None, "shares": None,
+                })
+                continue
+
+            shares_bought = amount_to_invest / price
+            self.holdings[ticker] = self.holdings.get(ticker, 0) + shares_bought
+            self.cash -= amount_to_invest
+            self.history.append({
+                "date": date, "ticker": ticker, "action": "buy",
+                "status": "exécuté", "price": price,
+                "amount_usd": amount_to_invest, "shares": shares_bought,
+            })
+
     def get_transaction_log(self) -> pd.DataFrame:
         """Retourne l'historique complet des transactions tentées (exécutées ou non, avec la raison)."""
         return pd.DataFrame(self.history)

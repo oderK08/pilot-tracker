@@ -16,7 +16,7 @@ légale de la donnée source, pas un choix de ce module) :
 """
 import pandas as pd
 
-from data_sources import congress_trades, hedge_fund_13f, cusip_resolver, archive
+from data_sources import congress_trades, hedge_fund_13f, cusip_resolver, archive, value_history
 from data_sources.options_parser import parse_option_details
 from data_sources.price_data import get_price_history, get_price_on_or_after
 from simulation.portfolio_simulator import PortfolioSimulator

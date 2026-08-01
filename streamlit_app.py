@@ -32,7 +32,7 @@ def get_pilot_data(pilot_type: str, name: str):
     chaque interaction sur la même recherche pendant une session.
     """
     sim, benchmark_df = core.run_simulation(pilot_type, name)
-    value_df = sim.value_over_time()
+    value_df = core.get_value_over_time(pilot_type, name, sim)
     positions_df = sim.get_current_positions()
     log_df = sim.get_transaction_log()
     return value_df, benchmark_df, positions_df, log_df

@@ -24,6 +24,22 @@ from simulation.portfolio_simulator import PortfolioSimulator
 BENCHMARK_TICKER = "SPY"
 HEDGE_FUND_YEARS = 5
 
+def get_value_over_time(pilot_type: str, name: str, sim: PortfolioSimulator) -> pd.DataFrame:
+    """
+    Retourne la valeur journalière du portefeuille, en utilisant le cache
+    pré-calculé (voir data_sources/value_history.py) si disponible -- ne
+    recalcule que les jours manquants depuis la dernière mise à jour
+    connue, pas tout l'historique.
+
+    C'est l'étape la plus coûteuse de tout le pipeline (un appel au prix
+    pour CHAQUE jour x CHAQUE position détenue ce jour-là) -- update_archive.py
+    (le run planifié quotidien) alimente ce cache d'un jour à la fois et le
+    committe dans le dépôt Git, donc l'appli Streamlit n'a généralement
+    besoin de calculer au maximum qu'un jour ou deux (le temps écoulé
+    depuis le dernier run planifié), jamais l'historique complet.
+    """
+    return value_history.update_value_history(pilot_type, name, sim)
+
 
 def _normalize_congress_trades(df: pd.DataFrame):
     """

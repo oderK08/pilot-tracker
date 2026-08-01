@@ -32,6 +32,38 @@ TIMEOUT = 30
 
 MIN_ACCEPTABLE_ROWS = 10   # en dessous, yfinance est considéré en échec
 MAX_NAN_FRACTION = 0.05    # si plus de 5% des clôtures sont manquantes, données jugées corrompues
+MAX_PLAUSIBLE_DAILY_MOVE = 0.50  # au-delà de 50% de variation en un seul jour, on suspecte une donnée corrompue plutôt qu'un vrai mouvement de marché
+
+
+def _strip_implausible_trailing_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Retire les DERNIÈRES lignes dont la clôture s'écarte de façon
+    implausible (>50% en un seul jour) de la ligne précédente -- protection
+    contre un bug de donnée connu chez Yahoo Finance (barres journalières
+    incomplètes/corrompues signalées fin juillet 2026, voir docstring du
+    module) qui peut renvoyer un dernier point à un prix absurde (proche de
+    0, ou doublé) sans que ce soit un vrai mouvement de marché.
+
+    On ne vérifie que la FIN de la série (pas le milieu) : un vrai
+    krach/une vraie envolée historique reste plausible au milieu d'une
+    série, mais un dernier point isolé et aberrant sur des valeurs
+    autrement stables est bien plus probablement un artefact de donnée
+    qu'un vrai mouvement de +/-50% en une journée sur une action établie.
+    """
+    df = df.sort_values("date").reset_index(drop=True)
+    while len(df) >= 2:
+        last_close = df.iloc[-1]["close"]
+        prev_close = df.iloc[-2]["close"]
+        if prev_close <= 0:
+            break
+        move = abs(last_close - prev_close) / prev_close
+        if move <= MAX_PLAUSIBLE_DAILY_MOVE:
+            break
+        print(f"[price_data] Dernier point de prix ({df.iloc[-1]['date'].date()}: {last_close:.2f}) "
+              f"écarté -- variation de {move:.0%} par rapport à la veille jugée implausible "
+              "(probable donnée corrompue plutôt qu'un vrai mouvement de marché).")
+        df = df.iloc[:-1]
+    return df
 
 
 def _try_yfinance(ticker: str, start: str = None, end: str = None) -> pd.DataFrame:
@@ -120,14 +152,15 @@ def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.Dat
     des deux erreurs pour faciliter le diagnostic.
     """
     try:
-        return _try_yfinance(ticker, start=start, end=end)
+        df = _try_yfinance(ticker, start=start, end=end)
+        return _strip_implausible_trailing_rows(df)
     except Exception as e_yf:
         print(f"[price_data] yfinance a échoué pour '{ticker}' ({e_yf}) -- "
               "tentative avec Alpha Vantage en secours...")
         try:
             df = _try_alpha_vantage(ticker, start=start, end=end)
             print(f"[price_data] Alpha Vantage a pris le relais avec succès pour '{ticker}'.")
-            return df
+            return _strip_implausible_trailing_rows(df)
         except Exception as e_av:
             raise RuntimeError(
                 f"[price_data] Impossible de récupérer les prix de '{ticker}' -- "

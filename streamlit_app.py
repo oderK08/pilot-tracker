@@ -101,16 +101,27 @@ if run and name:
         col3.metric("Écart vs S&P 500", f"{diff_pct:+.1f}%",
                     delta=f"{diff_pct:+.1f}%", delta_color="normal")
 
-    # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
+   # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
     st.subheader("Performance réelle dans le temps")
     st.caption(
-        "Les deux courbes sont indexées à une base commune de 10 000$ au départ, pour comparer "
-        "des **performances** plutôt que des montants absolus (le portefeuille réel et le repère "
-        "théorique n'ont pas la même échelle en dollars)."
+        "Les deux courbes sont indexées à une base commune de 10 000$ **au début de la période "
+        "affichée** (pas depuis le tout début), pour comparer des **performances** plutôt que des "
+        "montants absolus."
     )
-    value_df_norm = core.normalize_to_base(value_df, "total_value", base=10_000)
-    benchmark_df_norm = core.normalize_to_base(benchmark_df, "benchmark_value", base=10_000) if not benchmark_df.empty else benchmark_df
 
+    range_key = st.segmented_control(
+        "Période affichée",
+        options=["3M", "6M", "YTD", "MAX"],
+        format_func=lambda k: {"3M": "3 mois", "6M": "6 mois", "YTD": "Depuis janvier", "MAX": "Depuis le début"}[k],
+        default="MAX",
+    )
+    range_key = range_key or "MAX"  # segmented_control peut renvoyer None si désélectionné
+
+    value_df_filtered = core.filter_by_range(value_df, "date", range_key)
+    benchmark_df_filtered = core.filter_by_range(benchmark_df, "date", range_key) if not benchmark_df.empty else benchmark_df
+
+    value_df_norm = core.normalize_to_base(value_df_filtered, "total_value", base=10_000)
+    benchmark_df_norm = core.normalize_to_base(benchmark_df_filtered, "benchmark_value", base=10_000) if not benchmark_df_filtered.empty else benchmark_df_filtered
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=value_df_norm["date"], y=value_df_norm["total_value"],

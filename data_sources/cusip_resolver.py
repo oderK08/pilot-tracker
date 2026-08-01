@@ -17,6 +17,7 @@ SYMBOL | QUANTITY (FAILS) | DESCRIPTION | PRICE.
 import io
 import json
 import os
+import time
 import zipfile
 from datetime import datetime, timedelta
 
@@ -56,12 +57,19 @@ def _try_download(year: int, month: int, half: str) -> bytes:
     return resp.content
 
 
-def _generate_candidate_periods(n_months_back: int = 4):
+def _generate_candidate_periods(n_months_back: int = 24):
     """
-    Génère les périodes (année, mois, moitié) les plus récentes en premier.
-    La donnée a un délai de publication de 2 à 6 semaines selon la période
-    (la 1ère moitié d'un mois sort fin de mois, la 2ème moitié sort vers le
-    15 du mois suivant), donc on remonte plusieurs mois en arrière au besoin.
+    Génère les périodes (année, mois, moitié) les plus récentes en premier,
+    sur `n_months_back` mois en arrière (24 par défaut, soit 2 ans).
+
+    ⚠️ Ce nombre a été augmenté de 4 à 24 mois : un seul instantané récent
+    ne couvre que les titres ACTUELLEMENT en situation de fails-to-deliver
+    -- un titre détenu par un fonds il y a un an, mais qui n'est plus en
+    situation de fails-to-deliver aujourd'hui, ratait complètement la
+    résolution. Ça faussait la valorisation des trimestres 13F anciens
+    (positions non résolues = valeur ignorée), créant l'apparence d'une
+    "performance" énorme et artificielle par rapport aux trimestres plus
+    récents mieux couverts.
     """
     candidates = []
     d = datetime.today().replace(day=1)
@@ -72,21 +80,42 @@ def _generate_candidate_periods(n_months_back: int = 4):
     return candidates
 
 
-def _find_latest_available_file() -> bytes:
+def _fetch_and_merge_all_available(n_months_back: int = 24) -> dict:
     """
-    Essaie les périodes les plus récentes en remontant dans le temps
-    jusqu'à en trouver une disponible.
+    Télécharge et FUSIONNE tous les instantanés disponibles sur
+    `n_months_back` mois (pas juste le plus récent) -- construit une
+    correspondance CUSIP->ticker cumulative, bien plus complète qu'un seul
+    instantané, indispensable pour résoudre correctement des positions
+    détenues il y a plusieurs années (voir docstring de
+    _generate_candidate_periods).
     """
-    for year, month, half in _generate_candidate_periods():
-        content = _try_download(year, month, half)
-        if content:
-            return content
+    merged_mapping = {}
+    n_files_used = 0
 
-    raise RuntimeError(
-        "[cusip_resolver] Impossible de trouver un fichier Fails-to-Deliver récent sur "
-        "plusieurs mois. Vérifie la connectivité réseau, ou si la structure d'URL de la SEC "
-        "a changé (voir https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data)."
-    )
+    for year, month, half in _generate_candidate_periods(n_months_back):
+        time.sleep(0.1)  # usage responsable de la SEC, pas de rafale de dizaines de requêtes d'un coup
+        content = _try_download(year, month, half)
+        if not content:
+            continue
+        try:
+            df = _parse_cusip_ticker_file(content)
+        except Exception:
+            continue  # fichier corrompu/illisible -> ignoré, on continue avec les autres mois
+
+        df = df.dropna(subset=["CUSIP", "SYMBOL"])
+        for cusip, symbol in zip(df["CUSIP"], df["SYMBOL"]):
+            merged_mapping.setdefault(cusip, symbol)  # garde la 1ère correspondance trouvée (peu importe laquelle, un CUSIP ne change pas de ticker)
+        n_files_used += 1
+
+    if n_files_used == 0:
+        raise RuntimeError(
+            "[cusip_resolver] Aucun fichier Fails-to-Deliver n'a pu être récupéré sur "
+            f"{n_months_back} mois. Vérifie la connectivité réseau."
+        )
+
+    print(f"[cusip_resolver] {n_files_used} instantané(s) mensuel(s) fusionné(s), "
+          f"{len(merged_mapping)} correspondances CUSIP->Ticker au total.")
+    return merged_mapping
 
 
 def _parse_cusip_ticker_file(zip_content: bytes) -> pd.DataFrame:
@@ -131,26 +160,24 @@ def _save_disk_cache(mapping: dict):
 
 def build_cusip_to_ticker_map(force_refresh: bool = False) -> dict:
     """
-    Construit un dict {cusip: ticker} à partir du fichier Fails-to-Deliver
-    de la SEC le plus récent -- lu depuis un cache disque si disponible et
-    récent (moins de 7 jours), sinon retéléchargé et re-mis en cache.
+    Construit un dict {cusip: ticker} en FUSIONNANT tous les instantanés
+    Fails-to-Deliver disponibles sur les 2 dernières années (pas juste le
+    plus récent) -- lu depuis un cache disque si disponible et récent
+    (moins de 7 jours), sinon reconstruit et re-mis en cache.
 
-    En cas de doublons (un même CUSIP apparaissant plusieurs fois dans le
-    fichier, ex: plusieurs dates de règlement), on garde la dernière
-    occurrence trouvée.
+    Fusionner plusieurs mois plutôt qu'un seul instantané est nécessaire
+    pour résoudre correctement des positions détenues il y a plusieurs
+    trimestres/années par un fonds -- un titre qui n'est plus en situation
+    de fails-to-deliver aujourd'hui peut très bien l'avoir été il y a un an
+    (voir docstring de _generate_candidate_periods pour le détail du
+    problème que ça causait sans cette fusion).
     """
     if not force_refresh:
         cached = _load_disk_cache()
         if cached is not None:
             return cached
 
-    content = _find_latest_available_file()
-    df = _parse_cusip_ticker_file(content)
-
-    df = df.dropna(subset=["CUSIP", "SYMBOL"])
-    df = df.drop_duplicates(subset="CUSIP", keep="last")
-    mapping = dict(zip(df["CUSIP"], df["SYMBOL"]))
-
+    mapping = _fetch_and_merge_all_available()
     _save_disk_cache(mapping)
     return mapping
 

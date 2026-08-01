@@ -21,6 +21,7 @@ Stratégie :
      https://www.alphavantage.co), limité à 25 requêtes/jour sur le palier
      gratuit.
 """
+import json
 import os
 import requests
 import pandas as pd
@@ -33,6 +34,42 @@ TIMEOUT = 30
 MIN_ACCEPTABLE_ROWS = 10   # en dessous, yfinance est considéré en échec
 MAX_NAN_FRACTION = 0.05    # si plus de 5% des clôtures sont manquantes, données jugées corrompues
 MAX_PLAUSIBLE_DAILY_MOVE = 0.50  # au-delà de 50% de variation en un seul jour, on suspecte une donnée corrompue plutôt qu'un vrai mouvement de marché
+
+# Cache disque persistant -- une fois l'historique d'un ticker constitué, on
+# ne va chercher QUE les jours manquants depuis le dernier prix connu, pas
+# tout l'historique à nouveau à chaque run. Même principe que l'archive des
+# transactions Congrès (data_sources/archive.py) et le cache CUSIP
+# (data_sources/cusip_resolver.py) : accumuler dans le temps plutôt que
+# tout re-télécharger, économise énormément de requêtes et réduit le risque
+# de rate limit (ex: YFRateLimitError observé en usage réel).
+PRICE_CACHE_DIR = os.path.join(os.path.dirname(__file__), "..", "data_archive", "prices")
+
+
+def _price_cache_path(ticker: str) -> str:
+    os.makedirs(PRICE_CACHE_DIR, exist_ok=True)
+    return os.path.join(PRICE_CACHE_DIR, f"{ticker.strip().upper()}.json")
+
+
+def _load_price_cache(ticker: str) -> pd.DataFrame:
+    path = _price_cache_path(ticker)
+    if not os.path.exists(path):
+        return pd.DataFrame(columns=["date", "close"])
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            records = json.load(f)
+        df = pd.DataFrame(records)
+        df["date"] = pd.to_datetime(df["date"])
+        return df.sort_values("date").reset_index(drop=True)
+    except Exception:
+        return pd.DataFrame(columns=["date", "close"])  # cache corrompu/illisible -> repart à zéro plutôt que de planter
+
+
+def _save_price_cache(ticker: str, df: pd.DataFrame):
+    path = _price_cache_path(ticker)
+    df_to_save = df.copy()
+    df_to_save["date"] = df_to_save["date"].astype(str)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(df_to_save.to_dict("records"), f)
 
 
 def _strip_implausible_trailing_rows(df: pd.DataFrame) -> pd.DataFrame:
@@ -132,25 +169,8 @@ def _try_alpha_vantage(ticker: str, start: str = None, end: str = None) -> pd.Da
     return df.reset_index(drop=True)
 
 
-def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.DataFrame:
-    """
-    Récupère l'historique de prix (clôture quotidienne) d'un ticker.
-
-    Essaie yfinance en premier, puis Alpha Vantage en secours si yfinance
-    échoue ou renvoie des données de mauvaise qualité (voir docstring du
-    module pour le détail de cette stratégie à deux niveaux).
-
-    Args:
-        ticker: ex "AAPL"
-        start: date de début au format "YYYY-MM-DD" (optionnel)
-        end: date de fin au format "YYYY-MM-DD" (optionnel)
-
-    Returns:
-        DataFrame avec colonnes: date, close
-
-    Lève une exception claire si les DEUX sources échouent, avec le détail
-    des deux erreurs pour faciliter le diagnostic.
-    """
+def _fetch_fresh(ticker: str, start: str = None, end: str = None) -> pd.DataFrame:
+    """Récupération réseau pure (yfinance puis Alpha Vantage en secours), sans cache."""
     try:
         df = _try_yfinance(ticker, start=start, end=end)
         return _strip_implausible_trailing_rows(df)
@@ -168,6 +188,69 @@ def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.Dat
                 f"  yfinance: {e_yf}\n"
                 f"  Alpha Vantage: {e_av}"
             ) from e_av
+
+
+def get_price_history(ticker: str, start: str = None, end: str = None) -> pd.DataFrame:
+    """
+    Récupère l'historique de prix (clôture quotidienne) d'un ticker, avec
+    un cache disque persistant :
+
+    - Si aucun cache n'existe encore pour ce ticker, récupération complète
+      (yfinance puis Alpha Vantage en secours) et mise en cache.
+    - Si un cache existe déjà, on ne récupère QUE les jours manquants
+      depuis la dernière date connue -- pas tout l'historique à nouveau.
+      Une fois l'historique initial constitué (ex: 6 ans pour un 13F), les
+      runs suivants ne demandent plus que quelques jours de données
+      fraîches, ce qui réduit fortement le nombre de requêtes et le risque
+      de limitation de débit (ex: YFRateLimitError observé en usage réel).
+
+    Args:
+        ticker: ex "AAPL"
+        start: date de début au format "YYYY-MM-DD" (optionnel) -- filtre
+            appliqué sur le résultat final, n'affecte pas ce qui est mis
+            en cache (le cache grandit dans le temps, indépendamment de ce
+            qu'un appel particulier demande)
+        end: date de fin au format "YYYY-MM-DD" (optionnel)
+
+    Returns:
+        DataFrame avec colonnes: date, close
+
+    Lève une exception claire si les DEUX sources échouent ET qu'aucun
+    cache n'est disponible pour compenser.
+    """
+    cached = _load_price_cache(ticker)
+
+    if not cached.empty:
+        last_cached_date = cached["date"].max()
+        fetch_start = (last_cached_date + pd.Timedelta(days=1))
+
+        if fetch_start <= pd.Timestamp.today():
+            try:
+                fresh = _fetch_fresh(ticker, start=fetch_start.strftime("%Y-%m-%d"))
+                if not fresh.empty:
+                    combined = pd.concat([cached, fresh], ignore_index=True)
+                    combined = combined.drop_duplicates(subset="date", keep="last").sort_values("date").reset_index(drop=True)
+                    _save_price_cache(ticker, combined)
+                    cached = combined
+                    print(f"[price_data] '{ticker}': {len(fresh)} nouveau(x) jour(s) récupéré(s) "
+                          f"et ajouté(s) au cache (total désormais: {len(cached)} jours).")
+            except Exception as e:
+                print(f"[price_data] Échec de la mise à jour incrémentale pour '{ticker}' ({e}) -- "
+                      "utilisation du cache existant tel quel, sans les tout derniers jours.")
+
+        result = cached
+    else:
+        result = _fetch_fresh(ticker, start=start, end=end)
+        if not result.empty:
+            _save_price_cache(ticker, result)
+            print(f"[price_data] '{ticker}': cache initial constitué ({len(result)} jours).")
+
+    if start:
+        result = result[result["date"] >= pd.Timestamp(start)]
+    if end:
+        result = result[result["date"] <= pd.Timestamp(end)]
+
+    return result.reset_index(drop=True)
 
 
 def get_price_on_or_after(price_history: pd.DataFrame, target_date) -> float:

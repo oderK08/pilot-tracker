@@ -46,6 +46,10 @@ st.caption(
 
 with st.sidebar:
     st.header("Choisir un pilote")
+    if st.button("🔄 Vider le cache (forcer un recalcul complet)", use_container_width=True):
+        st.cache_data.clear()
+        st.success("Cache vidé -- le prochain calcul repartira de zéro.")
+
     pilot_type = st.radio(
         "Type de pilote",
         ["congress", "hedge_fund"],

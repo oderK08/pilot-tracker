@@ -17,6 +17,7 @@ légale de la donnée source, pas un choix de ce module) :
 import pandas as pd
 
 from data_sources import congress_trades, hedge_fund_13f, cusip_resolver, archive
+from data_sources.options_parser import parse_option_details
 from data_sources.price_data import get_price_history, get_price_on_or_after
 from simulation.portfolio_simulator import PortfolioSimulator
 
@@ -24,13 +25,26 @@ BENCHMARK_TICKER = "SPY"
 HEDGE_FUND_YEARS = 5
 
 
-def _normalize_congress_trades(df: pd.DataFrame) -> pd.DataFrame:
+def _normalize_congress_trades(df: pd.DataFrame):
     """
-    Transforme un DataFrame brut de transactions (qu'il vienne de l'archive
-    ou d'une récupération en direct) au format attendu par le simulateur,
-    avec le VRAI montant estimé (milieu de la fourchette déclarée).
+    Sépare et normalise les transactions en DEUX groupes distincts -- les
+    actions classiques et les OPTIONS (identifiées par asset_type == "OP"
+    dans la source) -- car une option ne peut pas être traitée comme un
+    achat d'action au comptant (levier, prix d'exercice, échéance) sans
+    fausser complètement l'exposition réelle.
+
+    Le détail de l'option (call/put, strike, échéance, nombre de contrats)
+    est extrait du champ `comment` en texte libre déjà fourni par la
+    source -- pas besoin de reparser le document PDF nous-mêmes.
+
+    Returns:
+        (stock_trades, option_trades) -- deux DataFrames, chacun pouvant
+        être vide si aucune transaction du type correspondant n'est trouvée.
     """
-    records = []
+    stock_records = []
+    option_records = []
+    n_options_unparsed = 0
+
     for _, row in df.iterrows():
         ticker = row.get("ticker")
         if not ticker or pd.isna(ticker):
@@ -57,22 +71,35 @@ def _normalize_congress_trades(df: pd.DataFrame) -> pd.DataFrame:
         else:
             dollar_amount = None
 
-        records.append({
-            "date": pd.to_datetime(date), "ticker": ticker, "action": action,
-            "dollar_amount": dollar_amount,
-        })
+        is_option = str(row.get("asset_type", "")).upper() == "OP"
 
-    df_trades = pd.DataFrame(records)
-    if df_trades.empty:
-        raise RuntimeError("Aucune transaction n'a pu être normalisée (tickers manquants ou types non reconnus).")
-    return df_trades
+        if is_option:
+            details = parse_option_details(row.get("comment"))
+            if details is None:
+                n_options_unparsed += 1
+                continue  # texte du commentaire non reconnu -- on n'invente pas les détails manquants
+            option_records.append({
+                "date": pd.to_datetime(date), "ticker": ticker, "action": action,
+                "option_type": details["option_type"], "strike_price": details["strike_price"],
+                "expiration_date": details["expiration_date"], "num_contracts": details["num_contracts"],
+                "dollar_amount": dollar_amount,
+            })
+        else:
+            stock_records.append({
+                "date": pd.to_datetime(date), "ticker": ticker, "action": action,
+                "dollar_amount": dollar_amount,
+            })
+
+    if n_options_unparsed:
+        print(f"[core] {n_options_unparsed} transaction(s) d'options au format de commentaire non reconnu -- ignorées.")
+
+    return pd.DataFrame(stock_records), pd.DataFrame(option_records)
 
 
-def build_congress_trades(name: str) -> pd.DataFrame:
+def build_congress_trades(name: str):
     """
-    Normalise les transactions au format attendu par le simulateur, avec le
-    VRAI montant estimé (milieu de la fourchette déclarée) pour chaque
-    transaction.
+    Normalise les transactions au format attendu par le simulateur, séparées
+    en (stock_trades, option_trades).
 
     Fusionne systématiquement avec l'archive persistante locale (voir
     data_sources/archive.py) : la source externe n'a qu'~1,5 an
@@ -81,10 +108,13 @@ def build_congress_trades(name: str) -> pd.DataFrame:
     """
     live_df = congress_trades.get_transactions_for_politician(name)
     df = archive.merge_and_save("congress", name, live_df, archive.CONGRESS_DEDUP_KEYS)
-    try:
-        return _normalize_congress_trades(df)
-    except RuntimeError as e:
-        raise RuntimeError(f"Transactions trouvées pour '{name}' mais {e}") from e
+    stock_trades, option_trades = _normalize_congress_trades(df)
+    if stock_trades.empty and option_trades.empty:
+        raise RuntimeError(
+            f"Transactions trouvées pour '{name}' mais aucune n'a pu être normalisée "
+            "(tickers manquants, types non reconnus, ou commentaires d'options non reconnus)."
+        )
+    return stock_trades, option_trades
 
 
 def _snapshots_from_history(history: pd.DataFrame):
@@ -103,6 +133,23 @@ def _snapshots_from_history(history: pd.DataFrame):
     first_total_value = history[history["report_date"] == first_date]["value_usd"].sum()
 
     return snapshots, first_date, first_total_value
+
+
+def _combine_dates(stock_trades: pd.DataFrame, option_trades: pd.DataFrame) -> pd.DataFrame:
+    """
+    Combine les dates des transactions actions et options en un seul
+    DataFrame (juste la colonne "date") pour le calcul du benchmark --
+    gère proprement le cas où l'un des deux DataFrames est vide (et donc
+    sans même la colonne "date", ce qu'un simple pd.concat planterait sur).
+    """
+    dates = []
+    if not stock_trades.empty:
+        dates.append(stock_trades[["date"]])
+    if not option_trades.empty:
+        dates.append(option_trades[["date"]])
+    if not dates:
+        return pd.DataFrame(columns=["date"])
+    return pd.concat(dates, ignore_index=True)
 
 
 def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
@@ -226,17 +273,24 @@ def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_ar
             if not archived.empty:
                 _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
                         f"({len(archived)} transactions déjà connues).")
-                trades = _normalize_congress_trades(archived)
-                sim.process_trades(trades)
-                benchmark_df = compute_benchmark_dca(trades)
+                stock_trades, option_trades = _normalize_congress_trades(archived)
+                if not stock_trades.empty:
+                    sim.process_trades(stock_trades)
+                if not option_trades.empty:
+                    sim.process_option_trades(option_trades)
+                benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
                 return sim, benchmark_df
 
-        trades = build_congress_trades(name)
-        total_invested = trades.loc[trades["action"] == "buy", "dollar_amount"].sum()
-        _notify(f"{len(trades)} transactions à reconstituer pour {name} "
-                f"(~${total_invested:,.0f} au total, montants estimés au milieu des fourchettes déclarées).")
-        sim.process_trades(trades)
-        benchmark_df = compute_benchmark_dca(trades)
+        stock_trades, option_trades = build_congress_trades(name)
+        total_invested_stock = stock_trades.loc[stock_trades["action"] == "buy", "dollar_amount"].sum() if not stock_trades.empty else 0
+        _notify(f"{len(stock_trades)} transaction(s) d'actions et {len(option_trades)} transaction(s) d'options "
+                f"à reconstituer pour {name} (~${total_invested_stock:,.0f} investis en actions, "
+                "montants estimés au milieu des fourchettes déclarées).")
+        if not stock_trades.empty:
+            sim.process_trades(stock_trades)
+        if not option_trades.empty:
+            sim.process_option_trades(option_trades)
+        benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
 
     elif pilot_type == "hedge_fund":
         if prefer_archive:

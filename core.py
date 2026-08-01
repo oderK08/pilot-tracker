@@ -219,23 +219,32 @@ def compute_benchmark_lump_sum(amount: float, start_date) -> pd.DataFrame:
     return prices[["date", "benchmark_value"]]
 
 
-def normalize_to_base(df: pd.DataFrame, value_col: str, base: float = 10_000.0) -> pd.DataFrame:
+def filter_by_range(df: pd.DataFrame, date_col: str, range_key: str) -> pd.DataFrame:
     """
-    Reformate une série de valeurs pour qu'elle parte d'une base commune
-    (10 000$ par défaut) -- indispensable pour comparer équitablement deux
-    séries à des échelles très différentes (ex: un portefeuille réel à
-    plusieurs millions de $ vs un repère théorique). Sans cette
-    normalisation, la comparaison visuelle des deux courbes n'a pas de sens :
-    ce qui compte, c'est la PERFORMANCE relative, pas le montant absolu.
+    Filtre un DataFrame sur une plage de temps standard ("3M", "6M", "YTD",
+    "MAX") -- utilisé pour le sélecteur de période du graphique de
+    performance. Ne fait QUE filtrer ; le rebasage à 10 000$ doit être
+    appliqué APRÈS ce filtrage (voir normalize_to_base), pas avant, sinon
+    on verrait juste un zoom sur une courbe déjà indexée depuis le tout
+    début, pas la vraie performance isolée de cette fenêtre précise.
     """
-    df = df.copy()
     if df.empty:
         return df
-    first_value = df[value_col].iloc[0]
-    if not first_value:
+
+    today = pd.Timestamp.today()
+    if range_key == "3M":
+        cutoff = today - pd.DateOffset(months=3)
+    elif range_key == "6M":
+        cutoff = today - pd.DateOffset(months=6)
+    elif range_key == "YTD":
+        cutoff = pd.Timestamp(year=today.year, month=1, day=1)
+    elif range_key == "MAX":
         return df
-    df[value_col] = df[value_col] / first_value * base
-    return df
+    else:
+        raise ValueError(f"range_key inconnu: '{range_key}' (attendu: 3M, 6M, YTD, MAX)")
+
+    filtered = df[df[date_col] >= cutoff].reset_index(drop=True)
+    return filtered if not filtered.empty else df  # si la fenêtre est plus courte que l'historique dispo, on garde tout plutôt qu'un graphique vide
 
 
 def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_archive: bool = True):

@@ -176,9 +176,24 @@ def get_price_on_or_after(price_history: pd.DataFrame, target_date) -> float:
     bourse disponible APRÈS cette date si le marché était fermé ce jour-là
     (week-end, jour férié) -- utile pour simuler un achat à une date de
     transaction qui ne tombe pas forcément un jour ouvré.
+
+    Si AUCUNE donnée n'existe à partir de cette date (typiquement : on
+    demande la valeur "aujourd'hui", mais c'est un jour non ouvré ou le
+    marché n'a pas encore clôturé et la donnée n'est pas encore publiée),
+    on se replie sur le DERNIER prix connu AVANT cette date -- pratique
+    standard de valorisation ("dernière valeur liquidative connue") plutôt
+    que de considérer la position comme sans valeur faute de donnée toute
+    fraîche. Sans ce repli, la toute dernière date d'un graphique (souvent
+    "aujourd'hui") s'effondrait artificiellement à 0.
     """
     target_date = pd.to_datetime(target_date)
+
     candidates = price_history[price_history["date"] >= target_date]
-    if candidates.empty:
-        raise ValueError(f"[price_data] Aucun prix disponible à partir du {target_date.date()}.")
-    return candidates.iloc[0]["close"]
+    if not candidates.empty:
+        return candidates.iloc[0]["close"]
+
+    before = price_history[price_history["date"] < target_date]
+    if not before.empty:
+        return before.iloc[-1]["close"]
+
+    raise ValueError(f"[price_data] Aucun prix disponible ni avant ni après le {target_date.date()}.")

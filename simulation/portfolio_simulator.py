@@ -40,7 +40,7 @@ class PortfolioSimulator:
         self.price_cache = {}        # ticker -> DataFrame de prix (mis en cache)
         self.history = []            # historique de tous les mouvements (achats/ventes/positions/trimestres/options)
 
-   def _get_price_series(self, ticker: str) -> pd.DataFrame:
+    def _get_price_series(self, ticker: str) -> pd.DataFrame:
         """
         Récupère (et met en cache) l'historique de prix complet d'un ticker.
 
@@ -55,6 +55,7 @@ class PortfolioSimulator:
             start = (pd.Timestamp.today() - pd.DateOffset(years=6)).strftime("%Y-%m-%d")
             self.price_cache[ticker] = get_price_history(ticker, start=start)
         return self.price_cache[ticker]
+
     def _holdings_at(self, as_of_date) -> dict:
         """
         Retourne les positions ACTIONS réellement détenues à une date

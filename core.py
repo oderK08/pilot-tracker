@@ -247,6 +247,25 @@ def filter_by_range(df: pd.DataFrame, date_col: str, range_key: str) -> pd.DataF
     return filtered if not filtered.empty else df  # si la fenêtre est plus courte que l'historique dispo, on garde tout plutôt qu'un graphique vide
 
 
+def normalize_to_base(df: pd.DataFrame, value_col: str, base: float = 10_000.0) -> pd.DataFrame:
+    """
+    Reformate une série de valeurs pour qu'elle parte d'une base commune
+    (10 000$ par défaut) -- indispensable pour comparer équitablement deux
+    séries à des échelles très différentes (ex: un portefeuille réel à
+    plusieurs millions de $ vs un repère théorique). Sans cette
+    normalisation, la comparaison visuelle des deux courbes n'a pas de sens :
+    ce qui compte, c'est la PERFORMANCE relative, pas le montant absolu.
+    """
+    df = df.copy()
+    if df.empty:
+        return df
+    first_value = df[value_col].iloc[0]
+    if not first_value:
+        return df
+    df[value_col] = df[value_col] / first_value * base
+    return df
+
+
 def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_archive: bool = True):
     """
     Fonction principale : reconstitue le portefeuille réel d'un pilote.

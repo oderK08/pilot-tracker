@@ -40,11 +40,21 @@ class PortfolioSimulator:
         self.price_cache = {}        # ticker -> DataFrame de prix (mis en cache)
         self.history = []            # historique de tous les mouvements (achats/ventes/positions/trimestres/options)
 
-    def _get_price_series(self, ticker: str) -> pd.DataFrame:
-        if ticker not in self.price_cache:
-            self.price_cache[ticker] = get_price_history(ticker)
-        return self.price_cache[ticker]
+   def _get_price_series(self, ticker: str) -> pd.DataFrame:
+        """
+        Récupère (et met en cache) l'historique de prix complet d'un ticker.
 
+        ⚠️ Passe TOUJOURS un `start` explicite -- sans ça, yfinance se
+        replie silencieusement sur seulement le DERNIER MOIS de données
+        (comportement par défaut quand start/end sont tous les deux None),
+        ce qui gelait la valorisation de toute date plus ancienne sur un
+        unique prix figé (bug corrigé : ça donnait des paliers plats sur
+        les 13F au lieu de vraies variations quotidiennes).
+        """
+        if ticker not in self.price_cache:
+            start = (pd.Timestamp.today() - pd.DateOffset(years=6)).strftime("%Y-%m-%d")
+            self.price_cache[ticker] = get_price_history(ticker, start=start)
+        return self.price_cache[ticker]
     def _holdings_at(self, as_of_date) -> dict:
         """
         Retourne les positions ACTIONS réellement détenues à une date

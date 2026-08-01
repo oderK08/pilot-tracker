@@ -46,7 +46,7 @@ st.caption(
 
 with st.sidebar:
     st.header("Choisir un pilote")
-    if st.button("🔄 Vider le cache (forcer un recalcul complet)", use_container_width=True):
+    if st.button("🔄 Vider le cache (forcer un recalcul complet)", width='stretch'):
         st.cache_data.clear()
         st.success("Cache vidé -- le prochain calcul repartira de zéro.")
 
@@ -62,7 +62,15 @@ with st.sidebar:
     options = TRACKED_CONGRESS if pilot_type == "congress" else TRACKED_HEDGE_FUNDS
     name = st.selectbox("Choisir dans la liste suivie", options)
 
-    run = st.button("Analyser", type="primary", use_container_width=True)
+    if st.button("Analyser", type="primary", width='stretch'):
+        # Mémorisé dans session_state -- un st.button() redevient False dès
+        # le PROCHAIN rerun (ex: quand on clique sur le sélecteur de période
+        # 3M/6M/YTD plus bas), donc s'appuyer directement sur cette valeur
+        # faisait disparaître tout le résultat au moindre autre clic sur la
+        # page. session_state, lui, persiste entre les reruns.
+        st.session_state.show_results = True
+        st.session_state.selected_pilot_type = pilot_type
+        st.session_state.selected_name = name
 
     st.divider()
     if pilot_type == "congress":
@@ -77,7 +85,10 @@ with st.sidebar:
             "trimestre déclaré, sur les 5 dernières années."
         )
 
-if run and name:
+if st.session_state.get("show_results"):
+    pilot_type = st.session_state.selected_pilot_type
+    name = st.session_state.selected_name
+
     with st.spinner(f"Récupération des données réelles pour {name}... (peut prendre une minute)"):
         try:
             value_df, benchmark_df, positions_df, log_df = get_pilot_data(pilot_type, name)
@@ -101,7 +112,7 @@ if run and name:
         col3.metric("Écart vs S&P 500", f"{diff_pct:+.1f}%",
                     delta=f"{diff_pct:+.1f}%", delta_color="normal")
 
-   # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
+    # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
     st.subheader("Performance réelle dans le temps")
     st.caption(
         "Les deux courbes sont indexées à une base commune de 10 000$ **au début de la période "
@@ -122,6 +133,7 @@ if run and name:
 
     value_df_norm = core.normalize_to_base(value_df_filtered, "total_value", base=10_000)
     benchmark_df_norm = core.normalize_to_base(benchmark_df_filtered, "benchmark_value", base=10_000) if not benchmark_df_filtered.empty else benchmark_df_filtered
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=value_df_norm["date"], y=value_df_norm["total_value"],
@@ -138,7 +150,7 @@ if run and name:
         yaxis_title="Valeur (base 10 000$)", margin=dict(l=0, r=0, t=10, b=0),
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # --- Positions actuelles ---
     st.subheader("Positions actuelles")
@@ -153,13 +165,13 @@ if run and name:
             height=max(300, len(positions_clean) * 32),
             xaxis_title="Valeur actuelle ($)", margin=dict(l=0, r=0, t=10, b=0),
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width='stretch')
     else:
         st.info("Aucune position actuelle exploitable (tout a été vendu, ou prix indisponible).")
 
     # --- Historique des mouvements ---
     st.subheader("Historique des mouvements")
-    st.dataframe(log_df, use_container_width=True, hide_index=True)
+    st.dataframe(log_df, width='stretch', hide_index=True)
 
-elif not run:
+else:
     st.info("👈 Choisis un type de pilote et un nom dans la barre latérale, puis clique sur \"Analyser\".")

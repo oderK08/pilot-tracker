@@ -24,6 +24,7 @@ from simulation.portfolio_simulator import PortfolioSimulator
 BENCHMARK_TICKER = "SPY"
 HEDGE_FUND_YEARS = 5
 
+
 def get_value_over_time(pilot_type: str, name: str, sim: PortfolioSimulator) -> pd.DataFrame:
     """
     Retourne la valeur journalière du portefeuille, en utilisant le cache
@@ -178,6 +179,19 @@ def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
     re-télécharger ~20 dépôts XML à chaque run pour un gérant suivi
     régulièrement.
 
+    ⚠️ Diagnostic important : la résolution CUSIP -> ticker (voir
+    cusip_resolver.py) peut réussir différemment d'un trimestre à l'autre,
+    selon que les titres détenus ce trimestre-là sont couverts par le
+    fichier Fails-to-Deliver de la SEC au moment de la requête. Si un
+    trimestre (notamment le PREMIER, qui sert de référence pour le
+    benchmark) résout mal ses positions, sa valeur calculée est sous-
+    estimée -- ce qui peut faire apparaître une "performance" énorme et
+    fausse par la suite (le trimestre de départ semble minuscule, tout le
+    reste semble avoir explosé en comparaison, alors que c'est juste un
+    problème de couverture de données, pas une vraie performance). On
+    journalise donc le taux de résolution PAR TRIMESTRE pour pouvoir
+    repérer ce cas.
+
     snapshots: liste de (date, {ticker: nombre_reel_actions}), une entrée
     par trimestre réellement déposé.
     """
@@ -189,6 +203,18 @@ def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
 
     cusip_map = cusip_resolver.build_cusip_to_ticker_map()
     history["ticker"] = history["cusip"].map(cusip_map)
+
+    # Diagnostic PAR TRIMESTRE, avant de retirer les lignes non résolues --
+    # permet de repérer si un trimestre (notamment le premier) a une
+    # couverture nettement plus faible que les autres.
+    for report_date, group in history.groupby("report_date"):
+        n_total = len(group)
+        n_resolved = group["ticker"].notna().sum()
+        value_total = group["value_usd"].sum()
+        value_resolved = group[group["ticker"].notna()]["value_usd"].sum()
+        pct_value = (value_resolved / value_total * 100) if value_total else 0
+        print(f"[core] {name} -- trimestre {report_date.date()}: {n_resolved}/{n_total} positions résolues "
+              f"({pct_value:.0f}% de la valeur déclarée totale couverte).")
 
     history = history.dropna(subset=["ticker"])
     if history.empty:

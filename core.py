@@ -288,6 +288,21 @@ def filter_by_range(df: pd.DataFrame, date_col: str, range_key: str) -> pd.DataF
     filtered = df[df[date_col] >= cutoff].reset_index(drop=True)
     return filtered if not filtered.empty else df  # si la fenêtre est plus courte que l'historique dispo, on garde tout plutôt qu'un graphique vide
 
+def to_percentage_return(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
+    """
+    Convertit une série de valeurs en PERFORMANCE EN POURCENTAGE depuis le
+    début de la période affichée (0% au premier point) -- affichage plus
+    standard qu'une base arbitraire de 10 000$ pour comparer des
+    performances entre deux séries à des échelles différentes.
+    """
+    df = df.copy()
+    if df.empty:
+        return df
+    first_value = df[value_col].iloc[0]
+    if not first_value:
+        return df
+    df[value_col] = (df[value_col] / first_value - 1) * 100
+    return df
 
 def normalize_to_base(df: pd.DataFrame, value_col: str, base: float = 10_000.0) -> pd.DataFrame:
     """

@@ -112,11 +112,11 @@ if st.session_state.get("show_results"):
         col3.metric("Écart vs S&P 500", f"{diff_pct:+.1f}%",
                     delta=f"{diff_pct:+.1f}%", delta_color="normal")
 
-    # --- Graphique de performance interactif (normalisé à une base commune de 10 000$) ---
+    # --- Graphique de performance interactif (en pourcentage de performance) ---
     st.subheader("Performance réelle dans le temps")
     st.caption(
-        "Les deux courbes sont indexées à une base commune de 10 000$ **au début de la période "
-        "affichée** (pas depuis le tout début), pour comparer des **performances** plutôt que des "
+        "Les deux courbes sont exprimées en **performance (%) depuis le début de la période "
+        "affichée** (0% au premier point), pour comparer des évolutions relatives plutôt que des "
         "montants absolus."
     )
 
@@ -131,8 +131,8 @@ if st.session_state.get("show_results"):
     value_df_filtered = core.filter_by_range(value_df, "date", range_key)
     benchmark_df_filtered = core.filter_by_range(benchmark_df, "date", range_key) if not benchmark_df.empty else benchmark_df
 
-    value_df_norm = core.normalize_to_base(value_df_filtered, "total_value", base=10_000)
-    benchmark_df_norm = core.normalize_to_base(benchmark_df_filtered, "benchmark_value", base=10_000) if not benchmark_df_filtered.empty else benchmark_df_filtered
+    value_df_norm = core.to_percentage_return(value_df_filtered, "total_value")
+    benchmark_df_norm = core.to_percentage_return(benchmark_df_filtered, "benchmark_value") if not benchmark_df_filtered.empty else benchmark_df_filtered
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -142,12 +142,13 @@ if st.session_state.get("show_results"):
     if not benchmark_df_norm.empty:
         fig.add_trace(go.Scatter(
             x=benchmark_df_norm["date"], y=benchmark_df_norm["benchmark_value"],
-            name="S&P 500 (base 10 000$ identique)",
+            name="S&P 500",
             line=dict(color="#888888", width=1.5, dash="dash"),
         ))
     fig.update_layout(
         hovermode="x unified", height=450,
-        yaxis_title="Valeur (base 10 000$)", margin=dict(l=0, r=0, t=10, b=0),
+        yaxis_title="Performance (%)", yaxis_ticksuffix="%",
+        margin=dict(l=0, r=0, t=10, b=0),
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
     )
     st.plotly_chart(fig, width='stretch')

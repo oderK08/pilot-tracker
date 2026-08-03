@@ -33,9 +33,10 @@ def get_pilot_data(pilot_type: str, name: str):
     """
     sim, benchmark_df = core.run_simulation(pilot_type, name)
     value_df = core.get_value_over_time(pilot_type, name, sim)
+    performance_df = core.get_performance_index_over_time(pilot_type, name, sim)
     positions_df = sim.get_current_positions()
     log_df = sim.get_transaction_log()
-    return value_df, benchmark_df, positions_df, log_df
+    return value_df, performance_df, benchmark_df, positions_df, log_df
 
 
 st.title("📊 Pilot Tracker")
@@ -91,7 +92,7 @@ if st.session_state.get("show_results"):
 
     with st.spinner(f"Récupération des données réelles pour {name}... (peut prendre une minute)"):
         try:
-            value_df, benchmark_df, positions_df, log_df = get_pilot_data(pilot_type, name)
+            value_df, performance_df, benchmark_df, positions_df, log_df = get_pilot_data(pilot_type, name)
         except Exception as e:
             st.error(f"❌ {e}")
             st.stop()
@@ -100,7 +101,7 @@ if st.session_state.get("show_results"):
         st.warning("Aucune donnée exploitable trouvée pour ce nom.")
         st.stop()
 
-    # --- Métriques clés ---
+    # --- Métriques clés (valeur ABSOLUE réelle, pas l'indice de performance) ---
     last_value = value_df["total_value"].iloc[-1]
     col1, col2, col3 = st.columns(3)
     col1.metric("Valeur actuelle du portefeuille", f"${last_value:,.0f}")
@@ -112,12 +113,13 @@ if st.session_state.get("show_results"):
         col3.metric("Écart vs S&P 500", f"{diff_pct:+.1f}%",
                     delta=f"{diff_pct:+.1f}%", delta_color="normal")
 
-    # --- Graphique de performance interactif (en pourcentage de performance) ---
+    # --- Graphique de performance interactif (indice chaîné, neutre aux rééquilibrages) ---
     st.subheader("Performance réelle dans le temps")
     st.caption(
         "Les deux courbes sont exprimées en **performance (%) depuis le début de la période "
-        "affichée** (0% au premier point), pour comparer des évolutions relatives plutôt que des "
-        "montants absolus."
+        "affichée** (0% au premier point). Pour le 13F, la méthode neutralise les rééquilibrages "
+        "et changements de taille de position (ex: capital déplacé vers du cash non suivi par le "
+        "13F) -- seul le vrai mouvement de prix des positions détenues compte dans ce calcul."
     )
 
     range_key = st.segmented_control(
@@ -128,15 +130,18 @@ if st.session_state.get("show_results"):
     )
     range_key = range_key or "MAX"  # segmented_control peut renvoyer None si désélectionné
 
-    value_df_filtered = core.filter_by_range(value_df, "date", range_key)
+    performance_df_filtered = core.filter_by_range(performance_df, "date", range_key)
     benchmark_df_filtered = core.filter_by_range(benchmark_df, "date", range_key) if not benchmark_df.empty else benchmark_df
 
-    value_df_norm = core.to_percentage_return(value_df_filtered, "total_value")
+    # Re-rebase à 0% au début de LA FENÊTRE choisie (pas depuis le tout début) --
+    # performance_df est déjà un indice chaîné neutre aux rééquilibrages, on le
+    # convertit juste en "% depuis le début de cette fenêtre précise" pour l'affichage.
+    value_df_norm = core.to_percentage_return(performance_df_filtered, "performance_index")
     benchmark_df_norm = core.to_percentage_return(benchmark_df_filtered, "benchmark_value") if not benchmark_df_filtered.empty else benchmark_df_filtered
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=value_df_norm["date"], y=value_df_norm["total_value"],
+        x=value_df_norm["date"], y=value_df_norm["performance_index"],
         name=f"Portefeuille de {name}", line=dict(color="#1a3a5c", width=2),
     ))
     if not benchmark_df_norm.empty:

@@ -27,19 +27,34 @@ HEDGE_FUND_YEARS = 5
 
 def get_value_over_time(pilot_type: str, name: str, sim: PortfolioSimulator) -> pd.DataFrame:
     """
-    Retourne la valeur journalière du portefeuille, en utilisant le cache
-    pré-calculé (voir data_sources/value_history.py) si disponible -- ne
-    recalcule que les jours manquants depuis la dernière mise à jour
-    connue, pas tout l'historique.
-
-    C'est l'étape la plus coûteuse de tout le pipeline (un appel au prix
-    pour CHAQUE jour x CHAQUE position détenue ce jour-là) -- update_archive.py
-    (le run planifié quotidien) alimente ce cache d'un jour à la fois et le
-    committe dans le dépôt Git, donc l'appli Streamlit n'a généralement
-    besoin de calculer au maximum qu'un jour ou deux (le temps écoulé
-    depuis le dernier run planifié), jamais l'historique complet.
+    Retourne la valeur ABSOLUE journalière du portefeuille ($), en
+    utilisant le cache pré-calculé (voir data_sources/value_history.py) si
+    disponible. Représente la valeur des positions RÉELLEMENT SUIVIES par
+    la source (13F ou Congrès) -- peut légitimement baisser si le pilote
+    réduit sa taille de position (ex: argent déplacé vers du cash, que le
+    13F ne capture pas), sans que ce soit une vraie perte de performance
+    (voir get_performance_index_over_time pour la mesure de performance
+    qui neutralise cet effet).
     """
     return value_history.update_value_history(pilot_type, name, sim)
+
+
+def get_performance_index_over_time(pilot_type: str, name: str, sim: PortfolioSimulator) -> pd.DataFrame:
+    """
+    Retourne un indice de PERFORMANCE (base 100) par rendement pondéré dans
+    le temps -- neutralise les rééquilibrages et changements de taille de
+    portefeuille (voir PortfolioSimulator.performance_index_over_time),
+    contrairement à la valeur absolue qui peut chuter simplement parce
+    qu'un fonds a réduit sa taille de position ou déplacé du capital vers
+    un actif non suivi par le 13F (le cash, notamment).
+
+    Mis en cache séparément de la valeur absolue (voir
+    data_sources/value_history.py, réutilisé avec une clé de pilote
+    distincte) -- même principe d'accumulation incrémentale jour par jour.
+    """
+    return value_history.update_value_history(
+        f"{pilot_type}_performance", name, sim, compute_fn=lambda s, **kw: s.performance_index_over_time(**kw)
+    )
 
 
 def _normalize_congress_trades(df: pd.DataFrame):

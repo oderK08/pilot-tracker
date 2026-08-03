@@ -35,10 +35,11 @@ from data_sources.price_data import get_price_history, get_price_on_or_after
 
 class PortfolioSimulator:
     def __init__(self):
-        self.holdings_timeline = []  # liste de (date, {ticker: shares}) -- état CUMULATIF après chaque événement, triée chronologiquement
-        self.option_positions = []   # liste de dicts {ticker, option_type, strike, expiration, num_contracts, entry_date, exit_date}
-        self.price_cache = {}        # ticker -> DataFrame de prix (mis en cache)
-        self.history = []            # historique de tous les mouvements (achats/ventes/positions/trimestres/options)
+        self.holdings_timeline = []   # Congrès : (date, {ticker: shares}) -- ÉVÉNEMENTS DISCRETS à date réelle connue
+        self.quarterly_snapshots = [] # 13F : (date, {ticker: shares}) -- instantanés de FIN DE TRIMESTRE, à INTERPOLER entre eux (voir _interpolated_holdings_at)
+        self.option_positions = []    # liste de dicts {ticker, option_type, strike, expiration, num_contracts, entry_date, exit_date}
+        self.price_cache = {}         # ticker -> DataFrame de prix (mis en cache)
+        self.history = []             # historique de tous les mouvements (achats/ventes/positions/trimestres/options)
 
     def _get_price_series(self, ticker: str) -> pd.DataFrame:
         """
@@ -59,8 +60,10 @@ class PortfolioSimulator:
     def _holdings_at(self, as_of_date) -> dict:
         """
         Retourne les positions ACTIONS réellement détenues à une date
-        donnée -- le dernier point de la timeline dont la date est <=
-        as_of_date, pas l'état final après toutes les transactions.
+        donnée (cas Congrès) -- le dernier point de la timeline dont la
+        date est <= as_of_date, pas l'état final après toutes les
+        transactions. Les dates ici sont RÉELLES (dates de divulgation
+        connues), donc un saut net à cette date précise est correct.
         """
         if not self.holdings_timeline:
             return {}
@@ -69,6 +72,51 @@ class PortfolioSimulator:
         if not applicable:
             return {}
         return applicable[-1][1]
+
+    def _interpolated_holdings_at(self, as_of_date) -> dict:
+        """
+        Retourne les positions 13F INTERPOLÉES linéairement entre les deux
+        trimestres connus qui encadrent as_of_date.
+
+        ⚠️ Pourquoi interpoler plutôt qu'un saut net (comme pour le
+        Congrès) : le 13F ne donne AUCUNE date exacte d'achat/vente à
+        l'intérieur du trimestre -- seulement un instantané au dernier
+        jour du trimestre. Attribuer tout le rééquilibrage du trimestre à
+        ce seul jour créait un "mur" vertical artificiel dans le
+        graphique de performance, qui n'a jamais vraiment eu lieu ainsi
+        dans la réalité (le vrai rééquilibrage s'est étalé sur les ~90
+        jours précédents, on ne sait juste pas exactement comment). Une
+        interpolation linéaire est une approximation, mais bien plus
+        honnête qu'un saut instantané.
+        """
+        if not self.quarterly_snapshots:
+            return {}
+
+        as_of_date = pd.Timestamp(as_of_date)
+        snapshots = self.quarterly_snapshots  # déjà trié par set_holdings_timeline
+
+        if as_of_date <= snapshots[0][0]:
+            return snapshots[0][1]
+        if as_of_date >= snapshots[-1][0]:
+            return snapshots[-1][1]
+
+        for i in range(len(snapshots) - 1):
+            date_a, holdings_a = snapshots[i]
+            date_b, holdings_b = snapshots[i + 1]
+            if date_a <= as_of_date <= date_b:
+                total_days = (date_b - date_a).days
+                elapsed_days = (as_of_date - date_a).days
+                frac = elapsed_days / total_days if total_days > 0 else 1.0
+
+                all_tickers = set(holdings_a.keys()) | set(holdings_b.keys())
+                interpolated = {}
+                for ticker in all_tickers:
+                    shares_a = holdings_a.get(ticker, 0)
+                    shares_b = holdings_b.get(ticker, 0)
+                    interpolated[ticker] = shares_a + (shares_b - shares_a) * frac
+                return interpolated
+
+        return snapshots[-1][1]  # ne devrait normalement pas être atteint
 
     def _options_value_at(self, as_of_date) -> float:
         """
@@ -110,8 +158,17 @@ class PortfolioSimulator:
         return total
 
     def total_value(self, as_of_date) -> float:
-        """Valeur de marché réelle du portefeuille (actions + options détenues À CETTE DATE, valorisées à cette date)."""
-        holdings = self._holdings_at(as_of_date)
+        """
+        Valeur de marché réelle du portefeuille (actions + options détenues
+        À CETTE DATE, valorisées à cette date).
+
+        Utilise les positions 13F INTERPOLÉES entre trimestres si elles
+        existent (voir _interpolated_holdings_at), sinon les événements
+        Congrès à date réelle (voir _holdings_at) -- un seul des deux
+        mécanismes est utilisé selon comment le simulateur a été alimenté
+        (process_trades pour le Congrès, set_holdings_timeline pour le 13F).
+        """
+        holdings = self._interpolated_holdings_at(as_of_date) if self.quarterly_snapshots else self._holdings_at(as_of_date)
         total = 0.0
         for ticker, shares in holdings.items():
             if shares <= 0:
@@ -281,24 +338,26 @@ class PortfolioSimulator:
 
     def set_holdings_timeline(self, snapshots: list):
         """
-        Fixe une SUITE de positions réelles dans le temps -- un trimestre 13F
-        après l'autre, chaque nouveau trimestre REMPLAÇANT entièrement les
-        positions précédentes sur les titres concernés (contrairement à un
-        simple cumul), pour refléter fidèlement les vrais changements de
-        portefeuille d'un gérant d'un trimestre à l'autre.
+        Fixe une SUITE d'instantanés 13F dans le temps -- interpolés
+        linéairement entre eux lors du calcul de la valeur (voir
+        _interpolated_holdings_at), car le 13F ne donne aucune date exacte
+        de transaction à l'intérieur du trimestre, seulement l'instantané
+        de fin de trimestre.
 
         Calcule aussi la DIFFÉRENCE avec le trimestre précédent pour chaque
         titre, afin de journaliser explicitement s'il s'agit d'un
         renforcement, d'une réduction, d'une nouvelle position ou d'une
-        position totalement clôturée.
+        position totalement clôturée -- ce journal reste un événement
+        discret à la date du dépôt (utile pour l'historique affiché),
+        seule la VALORISATION jour par jour est interpolée.
 
         Args:
             snapshots: liste de (date, {ticker: nombre_actions_reel}), pas
                 besoin d'être pré-triée (fait automatiquement)
         """
         new_snapshots = sorted(snapshots, key=lambda s: s[0])
-        self.holdings_timeline.extend(new_snapshots)
-        self.holdings_timeline.sort(key=lambda s: s[0])
+        self.quarterly_snapshots.extend(new_snapshots)
+        self.quarterly_snapshots.sort(key=lambda s: s[0])
 
         previous_holdings = {}
         for date, holdings in new_snapshots:
@@ -356,6 +415,85 @@ class PortfolioSimulator:
         records = [{"date": d, "total_value": self.total_value(d)} for d in dates]
         return pd.DataFrame(records)
 
+    def _value_with_holdings(self, holdings: dict, as_of_date) -> float:
+        """Valeur de marché d'un jeu de positions DONNÉ (pas forcément celui actif à cette date), à une date donnée."""
+        total = 0.0
+        for ticker, shares in holdings.items():
+            if shares <= 0:
+                continue
+            try:
+                price = get_price_on_or_after(self._get_price_series(ticker), as_of_date)
+                total += shares * price
+            except Exception:
+                continue
+        return total
+
+    def performance_index_over_time(self, start_date=None, end_date=None, freq: str = "D") -> pd.DataFrame:
+        """
+        Calcule un indice de PERFORMANCE (base 100 au départ) par
+        RENDEMENT PONDÉRÉ DANS LE TEMPS ("time-weighted return") -- la
+        méthode standard en reporting de performance financière pour
+        neutraliser les rééquilibrages et changements de taille de
+        portefeuille, qui ne doivent JAMAIS être comptés comme un gain ou
+        une perte de performance.
+
+        ⚠️ Pourquoi c'est nécessaire (et pas juste value_over_time() en %) :
+        un simple changement de composition (vendre X pour acheter Y de
+        valeur égale) ou de taille (déplacer du capital vers du cash non
+        suivi par le 13F) fait changer la valeur ABSOLUE suivie, même si
+        aucun "vrai" gain/perte n'a eu lieu. Normaliser cette valeur
+        absolue en % ferait apparaître ce changement de taille comme une
+        fausse performance. Ici, à chaque transition de trimestre 13F, on
+        calcule le rendement RÉEL du jeu de positions PRÉCÉDENT (juste
+        avant le rééquilibrage), on l'enchaîne à l'indice cumulé, puis on
+        repart avec les nouvelles positions SANS compter le changement de
+        taille lui-même.
+
+        Pour le cas Congrès (pas de trimestres 13F), la valeur absolue
+        correspond déjà aux vrais montants investis lors de vraies
+        transactions -- pas de rééquilibrage "capital flow" au même sens,
+        donc value_over_time() convertie en % est déjà correcte.
+        """
+        if not self.quarterly_snapshots:
+            value_df = self.value_over_time(start_date, end_date, freq)
+            if value_df.empty or not value_df["total_value"].iloc[0]:
+                return pd.DataFrame(columns=["date", "performance_index"])
+            first_value = value_df["total_value"].iloc[0]
+            value_df["performance_index"] = value_df["total_value"] / first_value * 100
+            return value_df[["date", "performance_index"]]
+
+        snapshots = self.quarterly_snapshots
+        if start_date is None:
+            start_date = snapshots[0][0]
+        if end_date is None:
+            end_date = pd.Timestamp.today()
+
+        dates = pd.date_range(start_date, end_date, freq=freq)
+        records = []
+        segment_start_index = 100.0
+        current_segment = 0
+
+        for d in dates:
+            # Avancer au bon segment (trimestre actif), en enchaînant le
+            # rendement RÉEL de chaque segment qui vient de se terminer
+            # AVANT de passer au suivant.
+            while current_segment < len(snapshots) - 1 and d >= snapshots[current_segment + 1][0]:
+                date_i, holdings_i = snapshots[current_segment]
+                date_next, _ = snapshots[current_segment + 1]
+                value_start = self._value_with_holdings(holdings_i, date_i)
+                value_end = self._value_with_holdings(holdings_i, date_next)
+                if value_start > 0:
+                    segment_start_index = segment_start_index * (value_end / value_start)
+                current_segment += 1
+
+            date_i, holdings_i = snapshots[current_segment]
+            value_start = self._value_with_holdings(holdings_i, date_i)
+            value_now = self._value_with_holdings(holdings_i, d)
+            index_now = segment_start_index * (value_now / value_start) if value_start > 0 else segment_start_index
+            records.append({"date": d, "performance_index": index_now})
+
+        return pd.DataFrame(records)
+
     def get_transaction_log(self) -> pd.DataFrame:
         """Retourne l'historique complet des mouvements (exécutés ou non, avec la raison)."""
         return pd.DataFrame(self.history)
@@ -365,7 +503,7 @@ class PortfolioSimulator:
         today = pd.Timestamp.today()
         records = []
 
-        holdings = self._holdings_at(today)
+        holdings = self._interpolated_holdings_at(today) if self.quarterly_snapshots else self._holdings_at(today)
         for ticker, shares in holdings.items():
             if shares <= 0:
                 continue

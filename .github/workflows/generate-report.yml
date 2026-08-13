@@ -49,10 +49,16 @@ jobs:
             --name "${{ inputs.name }}" \
             --quarters "${{ inputs.quarters }}"
 
+      # data_archive/ est commité au même titre que output/ : un pilote hors
+      # de la liste suivie (voir tracked_pilots.py) n'a aucune archive au
+      # premier run et télécharge donc tout depuis EDGAR. Sans cette ligne,
+      # ce téléchargement était jeté à la fin du job et chaque nouveau
+      # rapport sur le même gérant refaisait la soixantaine de requêtes SEC.
+      # Conservé, il rend tous les runs suivants instantanés et hors ligne.
       - name: Sauvegarder les résultats dans le repo
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add output/
+          git add output/ data_archive/
           git diff --staged --quiet || git commit -m "Rapport généré: ${{ inputs.name }}"
           git push

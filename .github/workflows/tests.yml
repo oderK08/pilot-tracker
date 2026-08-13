@@ -1,0 +1,35 @@
+name: Tests
+
+# Ces tests ne font AUCUN appel réseau : ils tournent sur des données 13F
+# fabriquées à la main, ce qui les rend rapides et fiables même quand EDGAR
+# est indisponible. Ils verrouillent les pièges du format 13F (déclaration
+# éclatée entre sous-gérants, unité de la colonne de valeur, puts confondus
+# avec des positions longues) et la lecture des variations trimestrielles.
+
+# Pas de workflow_dispatch : ces tests tournent déjà à chaque push, et
+# GitHub propose nativement "Re-run jobs" sur un run existant -- un bouton
+# de lancement manuel n'ajouterait rien.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Parsing 13F
+        run: python tests/test_13f_parsing.py
+
+      - name: Vue positions et variations
+        run: python tests/test_holdings_view.py

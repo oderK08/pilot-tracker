@@ -29,11 +29,27 @@ ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), "..", "data_archive")
 # Colonnes utilisées pour détecter les doublons entre l'archive existante et
 # les nouvelles données récupérées en direct -- une transaction est
 # considérée comme "la même" si toutes ces colonnes correspondent.
+#
+# ⚠️ Ce mécanisme vaut pour le CONGRÈS uniquement, où chaque ligne est un
+# événement ponctuel et indépendant. Il ne convient PAS aux positions 13F :
+# un même CUSIP y apparaît légitimement plusieurs fois dans un trimestre
+# (déclaration éclatée entre sous-gérants, ou position longue doublée d'un
+# put), et déduplicer sur (report_date, cusip) détruisait la position en
+# n'en gardant qu'un morceau. Les 13F passent par
+# `replace_quarters_and_save` -- voir cette fonction.
 CONGRESS_DEDUP_KEYS = [
     "filer_name", "ticker", "transaction_type",
     "transaction_date", "filing_date", "amount_range_low", "amount_range_high",
 ]
-HEDGE_FUND_DEDUP_KEYS = ["report_date", "cusip"]
+
+# Colonnes dont la présence atteste qu'une archive 13F a été produite par la
+# version actuelle du parsing. Une archive dépourvue de `put_call` vient de
+# l'ancien parsing : ses positions sont amputées (une ligne conservée par
+# CUSIP au lieu de la somme) et ses valeurs post-2022 gonflées d'un facteur
+# 1000. Rien ne permet de la réparer sur place -- les lignes manquantes ne
+# sont nulle part -- donc on la reconstruit intégralement depuis la SEC, qui
+# conserve ses archives indéfiniment.
+HEDGE_FUND_REQUIRED_COLUMNS = ["put_call", "title_of_class", "shrs_prn_type"]
 
 
 def _safe_name(name: str) -> str:
@@ -95,4 +111,85 @@ def merge_and_save(pilot_type: str, name: str, live_df: pd.DataFrame, dedup_keys
         combined = combined.drop_duplicates(subset=keys_present, keep="first").reset_index(drop=True)
 
     save_archive(pilot_type, name, combined)
+    return combined
+
+
+def delete_archive(pilot_type: str, name: str) -> bool:
+    """
+    Supprime l'archive d'un pilote. Retourne True si un fichier a bien été
+    supprimé.
+
+    ⚠️ À n'utiliser QUE pour les hedge funds : leurs données sont
+    intégralement re-téléchargeables depuis EDGAR, qui conserve ses
+    archives indéfiniment. L'archive du Congrès, elle, est irremplaçable --
+    sa source ne publie qu'environ 1,5 an d'historique glissant, donc tout
+    ce qui en est effacé est définitivement perdu (voir l'en-tête de ce
+    module).
+    """
+    path = _archive_path(pilot_type, name)
+    if os.path.exists(path):
+        os.remove(path)
+        return True
+    return False
+
+
+def is_legacy_hedge_fund_archive(df: pd.DataFrame) -> bool:
+    """
+    Vrai si l'archive 13F vient de l'ancien parsing (voir
+    HEDGE_FUND_REQUIRED_COLUMNS) et doit donc être jetée plutôt que
+    complétée.
+    """
+    if df.empty:
+        return False
+    return any(col not in df.columns for col in HEDGE_FUND_REQUIRED_COLUMNS)
+
+
+def load_hedge_fund_archive(name: str) -> pd.DataFrame:
+    """
+    Charge l'archive 13F d'un gérant, en refusant explicitement les
+    archives à l'ancien schéma : mieux vaut repartir de zéro (les données
+    sont intégralement re-téléchargeables depuis EDGAR) que d'afficher des
+    positions amputées avec l'assurance d'une archive.
+    """
+    df = load_archive("hedge_fund", name)
+    if is_legacy_hedge_fund_archive(df):
+        print(f"[archive] Archive 13F obsolète pour '{name}' (ancien schéma, positions incomplètes) "
+              "-- ignorée, elle sera reconstruite depuis EDGAR.")
+        return pd.DataFrame()
+    return df
+
+
+def replace_quarters_and_save(name: str, live_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fusionne des positions 13F fraîchement récupérées avec l'archive, au
+    niveau du TRIMESTRE et non de la ligne.
+
+    Un 13F n'est pas un flux d'événements mais une PHOTO : le dépôt le plus
+    récent d'un trimestre fait autorité sur tout ce qu'on avait pour ce
+    trimestre (c'est d'ailleurs à ça que servent les amendements 13F-HR/A).
+    On remplace donc les trimestres re-téléchargés en bloc, et on conserve
+    intacts les trimestres absents des données fraîches -- ce qui préserve
+    l'historique accumulé au-delà de la fenêtre interrogée.
+
+    Fusionner ligne à ligne serait faux dans les deux sens : on ne peut ni
+    additionner (on doublerait les positions à chaque exécution), ni
+    déduupliquer sur (trimestre, CUSIP) (on n'en garderait qu'un morceau).
+    """
+    archived = load_hedge_fund_archive(name)
+
+    if archived.empty:
+        combined = live_df.copy()
+    elif live_df.empty:
+        combined = archived
+    else:
+        refreshed_quarters = set(pd.to_datetime(live_df["report_date"]).unique())
+        kept = archived[~pd.to_datetime(archived["report_date"]).isin(refreshed_quarters)]
+        n_replaced = archived["report_date"].nunique() - kept["report_date"].nunique()
+        if n_replaced:
+            print(f"[archive] {name}: {n_replaced} trimestre(s) remplacé(s) par la version fraîche, "
+                  f"{kept['report_date'].nunique()} trimestre(s) plus ancien(s) conservé(s).")
+        combined = pd.concat([kept, live_df], ignore_index=True)
+
+    combined = combined.sort_values(["report_date", "value_usd"], ascending=[True, False]).reset_index(drop=True)
+    save_archive("hedge_fund", name, combined)
     return combined

@@ -125,6 +125,27 @@ def test_exits():
     assert exits.loc["Alibaba Group Hldg Ltd", "previous_weight_pct"] > 0
 
 
+@check("Une sortie porte la taille réelle de ce qui a été soldé, pas seulement son poids")
+def test_exits_carry_size():
+    view = hv.build_quarterly_view(_history(), n_quarters=6)
+    baba = view["exits"].set_index("label").loc["Alibaba Group Hldg Ltd"]
+
+    # Alibaba était détenu à 300 000 titres pour 30 M$ au trimestre précédent.
+    assert baba["previous_shares"] == 300_000, f"obtenu {baba['previous_shares']}"
+    assert baba["previous_value_usd"] == 30_000_000, f"obtenu {baba['previous_value_usd']}"
+
+
+@check("La mise en forme des sorties nomme le trimestre de référence")
+def test_exits_display_frame():
+    view = hv.build_quarterly_view(_history(), n_quarters=6)
+    display = hv.to_exits_frame(view["exits"], view["quarters"][1])
+
+    assert list(display.columns) == ["Position", "Type", "Poids en T2 25 %", "Titres soldés", "Valeur soldée $"]
+    assert len(display) == 1
+    # Sans trimestre de référence fourni, l'en-tête reste générique plutôt que faux.
+    assert "Poids avant %" in hv.to_exits_frame(view["exits"]).columns
+
+
 @check("Les poids d'un trimestre totalisent 100%")
 def test_weights_sum_to_100():
     view = hv.build_quarterly_view(_history(), n_quarters=6)

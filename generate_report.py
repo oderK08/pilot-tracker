@@ -122,9 +122,10 @@ def generate_hedge_fund(name: str, n_quarters: int = holdings_view.DEFAULT_QUART
     # --- Export 2 : les sorties, invisibles dans le tableau ci-dessus ---
     exits_path = None
     if not view["exits"].empty:
+        previous_quarter = quarters[1] if len(quarters) > 1 else None
         exits_path = os.path.join(output_dir, f"{safe_name}_sorties.csv")
-        view["exits"][["label", "security_type", "previous_weight_pct"]].to_csv(exits_path, index=False)
-        print(f"[generate_report] Positions liquidées sauvegardées: {exits_path}")
+        holdings_view.to_exits_frame(view["exits"], previous_quarter).to_csv(exits_path, index=False)
+        print(f"[generate_report] {len(view['exits'])} position(s) liquidée(s) sauvegardée(s): {exits_path}")
 
     # --- Graphique : poids des 10 premières lignes au fil des trimestres ---
     chart_path = None

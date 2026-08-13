@@ -188,17 +188,22 @@ def render_hedge_fund(name: str, n_quarters: int):
 
     # --- Les sorties : invisibles par construction dans le tableau ci-dessus ---
     if not exits.empty:
+        previous_quarter = quarters[1] if len(quarters) > 1 else None
         st.markdown("#### Positions liquidées ce trimestre")
         st.caption(
-            "Absentes du dernier 13F, donc invisibles dans le tableau ci-dessus — "
-            "et pourtant souvent l'information la plus parlante."
+            f"Détenues au trimestre précédent, absentes du 13F au {report} — donc invisibles dans le "
+            "tableau ci-dessus. C'est pourtant souvent le mouvement le plus parlant : liquider "
+            "entièrement une ligne dit plus qu'en rogner trois pourcents."
         )
-        exits_display = exits[["label", "security_type", "previous_weight_pct"]].rename(columns={
-            "label": "Position", "security_type": "Type", "previous_weight_pct": "Poids au trimestre précédent %",
-        })
+        exits_display = holdings_view.to_exits_frame(exits, previous_quarter)
+        weight_col = next((c for c in exits_display.columns if c.startswith("Poids")), None)
         st.dataframe(
             exits_display, width='stretch', hide_index=True,
-            column_config={"Poids au trimestre précédent %": st.column_config.NumberColumn(format="%.1f %%")},
+            column_config={
+                **({weight_col: st.column_config.NumberColumn(format="%.1f %%")} if weight_col else {}),
+                "Titres soldés": st.column_config.NumberColumn(format="localized"),
+                "Valeur soldée $": st.column_config.NumberColumn(format="compact"),
+            },
         )
 
     # --- Évolution du poids des plus grosses positions ---

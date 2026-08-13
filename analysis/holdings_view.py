@@ -176,6 +176,7 @@ def build_quarterly_view(history: pd.DataFrame, n_quarters: int = DEFAULT_QUARTE
 
     weights = window.pivot_table(index="key", columns="report_date", values="weight_pct", aggfunc="sum")
     shares = window.pivot_table(index="key", columns="report_date", values="shares", aggfunc="sum")
+    values = window.pivot_table(index="key", columns="report_date", values="value_usd", aggfunc="sum")
     prices = window.pivot_table(index="key", columns="report_date", values="implied_price", aggfunc="mean")
 
     identity = (window.sort_values("report_date")
@@ -215,15 +216,20 @@ def build_quarterly_view(history: pd.DataFrame, n_quarters: int = DEFAULT_QUARTE
                 **identity.loc[key].to_dict(),
                 "key": key,
                 "weight_pct": cur_weight,
-                "value_usd": None if exited else window.loc[
-                    (window["key"] == key) & (window["report_date"] == quarter), "value_usd"].sum(),
+                "value_usd": None if exited else values[quarter].get(key),
                 "shares": cur_shares,
                 "delta_weight_pts": delta_weight_pts,
                 "delta_shares": (cur_shares - prev_shares) if (has_prev and not exited) else None,
                 "delta_shares_pct": delta_shares_pct,
                 "price_change_pct": price_change,
                 "status": STATUS_EXITED if exited else _status(delta_shares_pct, is_new),
+                # Taille de la position AU TRIMESTRE PRÉCÉDENT. Indispensable
+                # pour une sortie : sans le nombre de titres et la valeur
+                # liquidés, "position vendue" reste une information abstraite,
+                # et c'est justement l'ampleur qui fait l'intérêt du signal.
                 "previous_weight_pct": prev_weight,
+                "previous_shares": prev_shares if has_prev else None,
+                "previous_value_usd": values[prev_quarter].get(key) if prev_quarter is not None else None,
             }
             for q in quarters:
                 row[f"w_{pd.Timestamp(q).date()}"] = weights[q].get(key)
@@ -324,6 +330,35 @@ def to_display_frame(positions: pd.DataFrame, quarters: list, include_history: b
             if col in positions.columns:
                 display[quarter_label(quarter)] = positions[col]
 
+    return display
+
+
+def to_exits_frame(exits: pd.DataFrame, previous_quarter=None) -> pd.DataFrame:
+    """
+    Met en forme les positions liquidées : ce qu'elles pesaient, combien de
+    titres et quelle valeur ont été soldés.
+
+    Une sortie n'apparaît nulle part dans le tableau des positions détenues
+    -- par définition, elle n'est plus détenue. C'est pourtant souvent le
+    mouvement le plus informatif du trimestre : un gérant qui liquide sa
+    première ligne dit quelque chose de bien plus net que celui qui rogne
+    trois pourcents sur la cinquième.
+    """
+    if exits.empty:
+        return pd.DataFrame()
+
+    columns = {
+        "label": "Position",
+        "security_type": "Type",
+        "previous_weight_pct": "Poids avant %",
+        "previous_shares": "Titres soldés",
+        "previous_value_usd": "Valeur soldée $",
+    }
+    available = {k: v for k, v in columns.items() if k in exits.columns}
+    display = exits[list(available)].rename(columns=available)
+
+    if previous_quarter is not None and "Poids avant %" in display.columns:
+        display = display.rename(columns={"Poids avant %": f"Poids en {quarter_label(previous_quarter)} %"})
     return display
 
 

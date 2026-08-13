@@ -103,8 +103,16 @@ qu'on construit au fil du temps.
   d'historique glissant ; tout ce qui en est effacé est perdu. On ajoute
   sans jamais retirer.
 - **13F** : entièrement régénérable, la SEC conservant ses archives
-  indéfiniment. Après un changement du parsing, lancer le workflow
-  *Reconstruire l'archive 13F* (ou `python update_archive.py --only
-  hedge_fund --rebuild`). Les archives produites par une version
-  antérieure du parsing sont automatiquement refusées à la lecture plutôt
-  que servies avec des positions amputées.
+  indéfiniment. Après un changement du parsing, relancer le workflow
+  *Mettre à jour l'archive* avec `only: hedge_fund` et `rebuild: ✅` (ou
+  `python update_archive.py --only hedge_fund --rebuild`). Les archives
+  produites par une version antérieure du parsing sont automatiquement
+  refusées à la lecture plutôt que servies avec des positions amputées.
+
+## Workflows GitHub Actions
+
+| Workflow | Déclenchement | Rôle |
+|---|---|---|
+| **Tests** | automatique (push / PR) | tests sans réseau du parsing 13F et de la vue |
+| **Mettre à jour l'archive** | quotidien 6h UTC + manuel | alimente l'archive ; options `only` et `rebuild` en manuel |
+| **Générer le rapport** | manuel | rapport statique (CSV/PNG) pour un pilote donné |

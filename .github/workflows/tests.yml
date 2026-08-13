@@ -6,10 +6,12 @@ name: Tests
 # éclatée entre sous-gérants, unité de la colonne de valeur, puts confondus
 # avec des positions longues) et la lecture des variations trimestrielles.
 
+# Pas de workflow_dispatch : ces tests tournent déjà à chaque push, et
+# GitHub propose nativement "Re-run jobs" sur un run existant -- un bouton
+# de lancement manuel n'ajouterait rien.
 on:
   push:
   pull_request:
-  workflow_dispatch:
 
 jobs:
   test:

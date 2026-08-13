@@ -3,19 +3,28 @@ Logique centrale de reconstitution de portefeuille -- partagée entre le
 script CLI (generate_report.py, pour les runs automatisés GitHub Actions)
 et l'application interactive (streamlit_app.py). Ce module ne fait AUCUN
 rendu graphique ni écriture de fichier : uniquement la récupération des
-données réelles et la simulation.
+données réelles et leur mise en forme.
 
-⚠️ Niveau de précision différent entre les deux types de pilote (limite
-légale de la donnée source, pas un choix de ce module) :
-  - "congress" : le STOCK Act n'oblige à déclarer qu'une FOURCHETTE de
-    montant, jamais un montant exact ni un nombre d'actions. Le montant
-    utilisé est le MILIEU de la fourchette déclarée. La source de données
-    ne couvre qu'environ 1,5 an d'historique glissant.
-  - "hedge_fund" : le 13F donne le nombre RÉEL et EXACT d'actions détenues
-    à chaque trimestre déclaré sur les 5 dernières années.
+⚠️ Les deux types de pilote ne sont PAS traités de la même façon, parce
+que leurs sources ne disent pas la même chose :
+
+  - "congress" : le STOCK Act déclare des TRANSACTIONS (des événements
+    datés), mais seulement par FOURCHETTE de montant, jamais un montant
+    exact ni un nombre d'actions. Le montant utilisé est le milieu de la
+    fourchette. Un portefeuille peut donc être reconstitué transaction par
+    transaction, et sa valeur simulée dans le temps -- avec l'imprécision
+    des fourchettes.
+
+  - "hedge_fund" : le 13F déclare des POSITIONS (une photo trimestrielle),
+    avec le nombre exact de titres, mais sans aucun mouvement entre deux
+    photos. On n'en tire donc PAS de performance : voir
+    analysis/holdings_view.py, qui en tire ce que cette source sait
+    réellement dire -- les positions et leurs variations d'un trimestre à
+    l'autre. Le simulateur de portefeuille ne sert plus qu'au Congrès.
 """
 import pandas as pd
 
+from analysis import holdings_view
 from data_sources import congress_trades, hedge_fund_13f, cusip_resolver, archive, value_history
 from data_sources.options_parser import parse_option_details
 from data_sources.price_data import get_price_history, get_price_on_or_after
@@ -149,24 +158,6 @@ def build_congress_trades(name: str):
     return stock_trades, option_trades
 
 
-def _snapshots_from_history(history: pd.DataFrame):
-    """
-    Transforme un historique 13F déjà résolu en tickers (qu'il vienne de
-    l'archive ou d'une récupération en direct) en (snapshots,
-    first_report_date, first_total_value).
-    """
-    snapshots = []
-    for report_date, group in history.groupby("report_date"):
-        holdings = dict(zip(group["ticker"], group["shares"]))
-        snapshots.append((report_date, holdings))
-    snapshots.sort(key=lambda s: s[0])
-
-    first_date, _ = snapshots[0]
-    first_total_value = history[history["report_date"] == first_date]["value_usd"].sum()
-
-    return snapshots, first_date, first_total_value
-
-
 def _combine_dates(stock_trades: pd.DataFrame, option_trades: pd.DataFrame) -> pd.DataFrame:
     """
     Combine les dates des transactions actions et options en un seul
@@ -184,58 +175,65 @@ def _combine_dates(stock_trades: pd.DataFrame, option_trades: pd.DataFrame) -> p
     return pd.concat(dates, ignore_index=True)
 
 
-def build_hedge_fund_timeline(name: str, years: int = HEDGE_FUND_YEARS):
+def build_hedge_fund_holdings(name: str, years: int = HEDGE_FUND_YEARS) -> pd.DataFrame:
     """
-    Retourne (snapshots, first_report_date, first_total_value) pour un
-    gérant de fonds, à partir de TOUS ses dépôts 13F-HR sur `years` années.
+    Récupère l'historique des positions 13F d'un gérant et le fusionne dans
+    l'archive persistante -- trimestre par trimestre, le dépôt le plus
+    récent faisant autorité (voir archive.replace_quarters_and_save).
 
-    Fusionne avec l'archive persistante locale -- moins critique que pour
-    le Congrès (la SEC garde ses archives indéfiniment), mais évite de
-    re-télécharger ~20 dépôts XML à chaque run pour un gérant suivi
-    régulièrement.
-
-    ⚠️ Diagnostic important : la résolution CUSIP -> ticker (voir
-    cusip_resolver.py) peut réussir différemment d'un trimestre à l'autre,
-    selon que les titres détenus ce trimestre-là sont couverts par le
-    fichier Fails-to-Deliver de la SEC au moment de la requête. Si un
-    trimestre (notamment le PREMIER, qui sert de référence pour le
-    benchmark) résout mal ses positions, sa valeur calculée est sous-
-    estimée -- ce qui peut faire apparaître une "performance" énorme et
-    fausse par la suite (le trimestre de départ semble minuscule, tout le
-    reste semble avoir explosé en comparaison, alors que c'est juste un
-    problème de couverture de données, pas une vraie performance). On
-    journalise donc le taux de résolution PAR TRIMESTRE pour pouvoir
-    repérer ce cas.
-
-    snapshots: liste de (date, {ticker: nombre_reel_actions}), une entrée
-    par trimestre réellement déposé.
+    Retourne le DataFrame des positions, prêt pour holdings_view.
     """
     live_history = hedge_fund_13f.get_13f_holdings_history(name, years=years)
     if live_history.empty:
         raise RuntimeError(f"Aucune position 13F trouvée pour '{name}' sur {years} ans.")
 
-    history = archive.merge_and_save("hedge_fund", name, live_history, archive.HEDGE_FUND_DEDUP_KEYS)
+    return archive.replace_quarters_and_save(name, live_history)
+
+
+def get_hedge_fund_view(name: str, n_quarters: int = holdings_view.DEFAULT_QUARTERS,
+                        prefer_archive: bool = True, progress_callback=None) -> dict:
+    """
+    Point d'entrée unique de la vue hedge fund : positions du dernier
+    trimestre triées par poids, variations par rapport aux trimestres
+    précédents, sorties, puts et calls.
+
+    Args:
+        n_quarters: profondeur d'historique affichée.
+        prefer_archive: si True et qu'une archive AU SCHÉMA ACTUEL existe,
+            elle est lue directement, sans aucune requête réseau (voir
+            archive.load_hedge_fund_archive -- une archive produite par
+            l'ancien parsing est refusée et déclenche une reconstruction).
+
+    ⚠️ La résolution CUSIP -> ticker (voir cusip_resolver.py) est
+    incomplète par nature : elle s'appuie sur le fichier Fails-to-Deliver
+    de la SEC, qui ne couvre pas tous les titres. Une position non résolue
+    est conservée et affichée sous le nom de son émetteur -- l'écarter
+    fausserait tous les poids en pourcentage, ce qui serait bien pire
+    qu'un libellé moins joli.
+    """
+    def _notify(msg):
+        if progress_callback:
+            progress_callback(msg)
+        print(f"[core] {msg}")
+
+    history = archive.load_hedge_fund_archive(name) if prefer_archive else pd.DataFrame()
+
+    if history.empty:
+        _notify(f"Récupération des dépôts 13F de {name} auprès de la SEC...")
+        history = build_hedge_fund_holdings(name)
+    else:
+        _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
+                f"({history['report_date'].nunique()} trimestres déjà connus).")
 
     cusip_map = cusip_resolver.build_cusip_to_ticker_map()
-    history["ticker"] = history["cusip"].map(cusip_map)
+    view = holdings_view.build_quarterly_view(history, n_quarters=n_quarters, ticker_map=cusip_map)
 
-    # Diagnostic PAR TRIMESTRE, avant de retirer les lignes non résolues --
-    # permet de repérer si un trimestre (notamment le premier) a une
-    # couverture nettement plus faible que les autres.
-    for report_date, group in history.groupby("report_date"):
-        n_total = len(group)
-        n_resolved = group["ticker"].notna().sum()
-        value_total = group["value_usd"].sum()
-        value_resolved = group[group["ticker"].notna()]["value_usd"].sum()
-        pct_value = (value_resolved / value_total * 100) if value_total else 0
-        print(f"[core] {name} -- trimestre {report_date.date()}: {n_resolved}/{n_total} positions résolues "
-              f"({pct_value:.0f}% de la valeur déclarée totale couverte).")
-
-    history = history.dropna(subset=["ticker"])
-    if history.empty:
-        raise RuntimeError(f"Positions trouvées pour '{name}' mais aucun CUSIP n'a pu être résolu en ticker.")
-
-    return _snapshots_from_history(history)
+    summary = view.get("summary", {})
+    if summary:
+        _notify(f"{name}: {summary['n_positions']} positions au {summary['report_date'].date()}, "
+                f"{summary['n_new']} entrée(s), {summary['n_exited']} sortie(s), "
+                f"{summary['n_options']} position(s) optionnelle(s).")
+    return view
 
 
 def compute_benchmark_dca(trades: pd.DataFrame) -> pd.DataFrame:
@@ -258,13 +256,14 @@ def compute_benchmark_dca(trades: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(columns=["date", "benchmark_value"])
 
     first_date = trades["date"].min()
-    return compute_benchmark_lump_sum(10_000.0, first_date)
+    return _benchmark_lump_sum(10_000.0, first_date)
 
 
-def compute_benchmark_lump_sum(amount: float, start_date) -> pd.DataFrame:
+def _benchmark_lump_sum(amount: float, start_date) -> pd.DataFrame:
     """
-    Benchmark pour le cas 13F : "si le montant total réellement déclaré
-    avait été investi en une fois dans le S&P 500 (SPY) à la date du rapport".
+    "Si le montant avait été investi en une fois dans le S&P 500 (SPY) à
+    cette date". Utilisé uniquement par le repère du Congrès -- les 13F ne
+    donnent plus lieu à aucun calcul de performance.
     """
     prices = get_price_history(BENCHMARK_TICKER, start=str(start_date.date()))
     if prices.empty:
@@ -340,26 +339,38 @@ def normalize_to_base(df: pd.DataFrame, value_col: str, base: float = 10_000.0) 
 
 def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_archive: bool = True):
     """
-    Fonction principale : reconstitue le portefeuille réel d'un pilote.
+    Reconstitue le portefeuille réel d'un pilote du CONGRÈS, transaction
+    par transaction.
+
+    ⚠️ Réservé à "congress". Les hedge funds passent par
+    get_hedge_fund_view() : un 13F est une photo trimestrielle sans aucun
+    mouvement intermédiaire, en simuler une valeur quotidienne donnait une
+    courbe dont la précision affichée n'existait pas dans la source.
 
     Args:
-        pilot_type: "congress" ou "hedge_fund"
-        name: nom du politicien ou du gérant de fonds
+        pilot_type: "congress"
+        name: nom du politicien
         progress_callback: fonction optionnelle appelée avec un message de
             progression (str) -- utile pour afficher un état d'avancement
             dans une interface interactive (Streamlit), sans coupler ce
             module à un framework d'interface en particulier.
         prefer_archive: si True (défaut), et qu'une archive existe déjà pour
             ce pilote, on l'utilise DIRECTEMENT sans requête réseau -- c'est
-            ce qui rend les pilotes suivis par update_archive.py (voir
-            update_archive.py) quasi INSTANTANÉS à consulter, au lieu
-            d'attendre ~20 requêtes SEC (13F) ou un téléchargement complet
-            (Congrès) à chaque fois. Un pilote jamais vu auparavant (pas
-            encore dans l'archive) déclenche quand même la récupération en
-            direct normale, qui alimente l'archive pour la prochaine fois.
+            ce qui rend les pilotes suivis par update_archive.py quasi
+            INSTANTANÉS à consulter, au lieu d'attendre un téléchargement
+            complet à chaque fois. Un pilote jamais vu auparavant déclenche
+            quand même la récupération en direct normale, qui alimente
+            l'archive pour la prochaine fois.
 
     Retourne (sim, benchmark_df).
     """
+    if pilot_type != "congress":
+        raise ValueError(
+            f"run_simulation ne traite que le Congrès, reçu '{pilot_type}'. "
+            "Pour un gérant de fonds, utiliser core.get_hedge_fund_view() -- un 13F "
+            "ne permet pas de reconstituer une performance (voir analysis/holdings_view.py)."
+        )
+
     def _notify(msg):
         if progress_callback:
             progress_callback(msg)
@@ -367,55 +378,28 @@ def run_simulation(pilot_type: str, name: str, progress_callback=None, prefer_ar
 
     sim = PortfolioSimulator()
 
-    if pilot_type == "congress":
-        if prefer_archive:
-            archived = archive.load_archive("congress", name)
-            if not archived.empty:
-                _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
-                        f"({len(archived)} transactions déjà connues).")
-                stock_trades, option_trades = _normalize_congress_trades(archived)
-                if not stock_trades.empty:
-                    sim.process_trades(stock_trades)
-                if not option_trades.empty:
-                    sim.process_option_trades(option_trades)
-                benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
-                return sim, benchmark_df
+    if prefer_archive:
+        archived = archive.load_archive("congress", name)
+        if not archived.empty:
+            _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
+                    f"({len(archived)} transactions déjà connues).")
+            stock_trades, option_trades = _normalize_congress_trades(archived)
+            if not stock_trades.empty:
+                sim.process_trades(stock_trades)
+            if not option_trades.empty:
+                sim.process_option_trades(option_trades)
+            benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
+            return sim, benchmark_df
 
-        stock_trades, option_trades = build_congress_trades(name)
-        total_invested_stock = stock_trades.loc[stock_trades["action"] == "buy", "dollar_amount"].sum() if not stock_trades.empty else 0
-        _notify(f"{len(stock_trades)} transaction(s) d'actions et {len(option_trades)} transaction(s) d'options "
-                f"à reconstituer pour {name} (~${total_invested_stock:,.0f} investis en actions, "
-                "montants estimés au milieu des fourchettes déclarées).")
-        if not stock_trades.empty:
-            sim.process_trades(stock_trades)
-        if not option_trades.empty:
-            sim.process_option_trades(option_trades)
-        benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
-
-    elif pilot_type == "hedge_fund":
-        if prefer_archive:
-            archived = archive.load_archive("hedge_fund", name)
-            if not archived.empty:
-                cusip_map = cusip_resolver.build_cusip_to_ticker_map()
-                archived["ticker"] = archived["cusip"].map(cusip_map)
-                archived = archived.dropna(subset=["ticker"])
-                if not archived.empty:
-                    _notify(f"Lecture instantanée depuis l'archive locale pour {name} "
-                            f"({archived['report_date'].nunique()} trimestres déjà connus).")
-                    snapshots, first_date, first_value = _snapshots_from_history(archived)
-                    sim.set_holdings_timeline(snapshots)
-                    benchmark_df = compute_benchmark_lump_sum(first_value, first_date)
-                    return sim, benchmark_df
-
-        snapshots, first_date, first_value = build_hedge_fund_timeline(name, years=HEDGE_FUND_YEARS)
-        n_tickers_total = len(set(t for _, h in snapshots for t in h.keys()))
-        _notify(f"{len(snapshots)} trimestres réels reconstitués pour {name} sur {HEDGE_FUND_YEARS} ans "
-                f"({n_tickers_total} titres différents détenus au fil du temps, "
-                f"premier trimestre connu: {first_date.date()}, valeur déclarée alors ~${first_value:,.0f}).")
-        sim.set_holdings_timeline(snapshots)
-        benchmark_df = compute_benchmark_lump_sum(first_value, first_date)
-
-    else:
-        raise ValueError(f"pilot_type doit être 'congress' ou 'hedge_fund', reçu: '{pilot_type}'")
+    stock_trades, option_trades = build_congress_trades(name)
+    total_invested_stock = stock_trades.loc[stock_trades["action"] == "buy", "dollar_amount"].sum() if not stock_trades.empty else 0
+    _notify(f"{len(stock_trades)} transaction(s) d'actions et {len(option_trades)} transaction(s) d'options "
+            f"à reconstituer pour {name} (~${total_invested_stock:,.0f} investis en actions, "
+            "montants estimés au milieu des fourchettes déclarées).")
+    if not stock_trades.empty:
+        sim.process_trades(stock_trades)
+    if not option_trades.empty:
+        sim.process_option_trades(option_trades)
+    benchmark_df = compute_benchmark_dca(_combine_dates(stock_trades, option_trades))
 
     return sim, benchmark_df

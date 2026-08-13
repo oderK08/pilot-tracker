@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+
+# ⚠️ data_archive/ n'est PAS ignoré : l'archive committée EST la donnée
+# qu'on accumule au fil du temps (voir data_sources/archive.py).

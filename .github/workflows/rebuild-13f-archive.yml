@@ -1,0 +1,46 @@
+name: Reconstruire l'archive 13F
+
+# Reconstruit intégralement les archives 13F des gérants suivis, en
+# repartant d'EDGAR. Sans risque de perte de données : la SEC conserve ses
+# archives indéfiniment, contrairement à la source du Congrès (~1,5 an
+# glissant), dont l'archive ne doit JAMAIS être reconstruite de cette façon
+# -- ce workflow ne touche donc que les hedge funds.
+#
+# À lancer manuellement après un changement du parsing 13F : les archives
+# produites par une version antérieure sont refusées à la lecture (voir
+# data_sources/archive.py, HEDGE_FUND_REQUIRED_COLUMNS) et doivent être
+# régénérées.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Reconstruire les archives 13F depuis EDGAR
+        env:
+          EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
+        run: python update_archive.py --only hedge_fund --rebuild
+
+      - name: Committer les archives reconstruites
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data_archive/hedge_fund/
+          git diff --staged --quiet || git commit -m "Reconstruction des archives 13F (parsing corrigé)"
+          git push

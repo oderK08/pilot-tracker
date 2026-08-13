@@ -33,3 +33,6 @@ jobs:
 
       - name: Vue positions et variations
         run: python tests/test_holdings_view.py
+
+      - name: Rapport PDF
+        run: python tests/test_pdf_report.py

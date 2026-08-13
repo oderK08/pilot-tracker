@@ -6,10 +6,11 @@ Deux rapports différents, parce que les deux sources ne disent pas la même
 chose (voir l'en-tête de core.py) :
   - congress   : graphiques de performance + positions + journal des
                  transactions.
-  - hedge_fund : tableau des positions et de leurs variations
-                 trimestrielles (CSV) + graphique des poids. AUCUNE
-                 performance -- un 13F ne permet pas de la calculer
-                 honnêtement (voir analysis/holdings_view.py).
+  - hedge_fund : rapport PDF tabulaire (positions, variations
+                 trimestrielles, positions liquidées) + les mêmes données
+                 en CSV. Aucun graphique et AUCUNE performance -- un 13F
+                 se lit ligne par ligne, et ne permet pas de calculer une
+                 performance honnêtement (voir analysis/holdings_view.py).
 
 Toute la logique de données vit dans core.py, partagée avec l'application
 interactive (streamlit_app.py). Ce fichier ne s'occupe que du rendu
@@ -28,7 +29,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import core
-from analysis import holdings_view
+from analysis import holdings_view, pdf_report
 
 OUTPUT_DIR = "output"
 
@@ -98,8 +99,9 @@ def generate_congress(name: str, output_dir: str = OUTPUT_DIR):
 def generate_hedge_fund(name: str, n_quarters: int = holdings_view.DEFAULT_QUARTERS,
                         output_dir: str = OUTPUT_DIR):
     """
-    Rapport 13F : le tableau des positions et de leurs variations, plus un
-    graphique de l'évolution des poids des principales lignes.
+    Rapport 13F : un PDF tabulaire (positions détenues, leurs variations
+    trimestrielles, et les positions liquidées), doublé des mêmes données
+    en CSV pour qui veut les retraiter.
     """
     os.makedirs(output_dir, exist_ok=True)
     safe_name = name.lower().replace(" ", "_")
@@ -127,27 +129,12 @@ def generate_hedge_fund(name: str, n_quarters: int = holdings_view.DEFAULT_QUART
         holdings_view.to_exits_frame(view["exits"], previous_quarter).to_csv(exits_path, index=False)
         print(f"[generate_report] {len(view['exits'])} position(s) liquidée(s) sauvegardée(s): {exits_path}")
 
-    # --- Graphique : poids des 10 premières lignes au fil des trimestres ---
-    chart_path = None
-    if len(quarters) > 1:
-        ordered = list(reversed(quarters))
-        labels = [holdings_view.quarter_label(q) for q in ordered]
+    # --- Export 3 : le rapport PDF, tableaux complets prêts à lire ---
+    pdf_path = os.path.join(output_dir, f"{safe_name}_13F.pdf")
+    pdf_report.build_pdf(name, view, pdf_path)
+    print(f"[generate_report] Rapport PDF sauvegardé: {pdf_path}")
 
-        fig, ax = plt.subplots(figsize=(11, 6))
-        for _, row in positions.head(10).iterrows():
-            weights = [row.get(f"w_{q.date()}") for q in ordered]
-            ax.plot(labels, weights, marker="o", linewidth=1.8, label=row["label"])
-        ax.set_ylabel("Poids dans le portefeuille déclaré (%)")
-        ax.set_title(f"Positions principales : {name} (au {summary['report_date'].date()})",
-                     fontsize=13, fontweight="bold", loc="left")
-        ax.legend(loc="upper left", frameon=False, fontsize=8, ncol=2)
-        fig.tight_layout()
-        chart_path = os.path.join(output_dir, f"{safe_name}_poids.png")
-        fig.savefig(chart_path, dpi=150)
-        plt.close(fig)
-        print(f"[generate_report] Graphique des poids sauvegardé: {chart_path}")
-
-    return {"positions": positions_path, "exits": exits_path, "weights_chart": chart_path}
+    return {"pdf": pdf_path, "positions": positions_path, "exits": exits_path}
 
 
 def generate(pilot_type: str, name: str, n_quarters: int = holdings_view.DEFAULT_QUARTERS,

@@ -87,11 +87,20 @@ python generate_report.py --pilot hedge_fund --name "Scion Asset Management" --q
 python generate_report.py --pilot congress --name "Nancy Pelosi"
 ```
 
+Pour un hedge fund, `generate_report.py` produit dans `output/` :
+
+| Fichier | Contenu |
+|---|---|
+| `<nom>_13F.pdf` | **le rapport lisible** : tableau des positions détenues avec leurs variations trimestrielles, puis tableau des positions liquidées. Format paysage, en-têtes répétés, aucun graphique |
+| `<nom>_positions.csv` | les mêmes positions, pour retraitement |
+| `<nom>_sorties.csv` | les positions liquidées, avec les titres et la valeur soldés |
+
 Les tests ne font aucun appel réseau :
 
 ```bash
 python tests/test_13f_parsing.py
 python tests/test_holdings_view.py
+python tests/test_pdf_report.py
 ```
 
 ## Archive

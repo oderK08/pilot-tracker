@@ -42,8 +42,12 @@ POSITION_KEYS = ["cusip", "title_of_class", "put_call", "shrs_prn_type"]
 # un ajustement technique, pas une décision de gestion.
 FLAT_THRESHOLD_PCT = 0.5
 
-DEFAULT_QUARTERS = 6
-QUARTER_CHOICES = [4, 6, 8, 12]
+# Trois trimestres : le dernier, celui auquel on le compare, et un
+# troisième qui suffit à distinguer une tendance d'un aller-retour. Au-delà,
+# les colonnes s'accumulent sans rien apprendre de plus sur le mouvement du
+# trimestre, qui est le sujet de cette vue.
+DEFAULT_QUARTERS = 3
+QUARTER_CHOICES = [3, 4, 6, 8]
 
 # Libellés de la nature du titre, dérivés de `put_call` et `shrs_prn_type`.
 TYPE_SHARES = "Actions"

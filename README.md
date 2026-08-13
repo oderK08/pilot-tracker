@@ -14,7 +14,7 @@ en tirer la même chose.
 |---|---|---|
 | Ce qui est déclaré | des **positions** (photo trimestrielle) | des **transactions** datées |
 | Précision | nombre de titres exact | fourchette de montant seulement |
-| Ce qu'on en tire | positions, poids, variations d'un trimestre à l'autre | reconstitution du portefeuille + performance vs S&P 500 |
+| Ce qu'on en tire | positions, poids, variations d'un trimestre à l'autre (3 trimestres par défaut) | reconstitution du portefeuille + performance vs S&P 500 |
 | Performance calculée | **non** — voir ci-dessous | oui, avec l'imprécision des fourchettes |
 
 ### Pourquoi aucune performance sur les 13F
@@ -71,7 +71,8 @@ data_sources/
   archive.py                  archive persistante committée dans le dépôt
 simulation/portfolio_simulator.py   reconstitution de portefeuille (Congrès uniquement)
 streamlit_app.py              application interactive
-generate_report.py            rapports statiques (PNG/CSV)
+analysis/pdf_report.py        rapport PDF tabulaire (13F)
+generate_report.py            rapports sur disque (PDF/CSV/PNG)
 update_archive.py             mise à jour quotidienne de l'archive (GitHub Actions)
 ```
 
@@ -83,7 +84,7 @@ export EDGAR_USER_AGENT="Prénom Nom email@exemple.com"   # exigé par la SEC
 
 streamlit run streamlit_app.py
 
-python generate_report.py --pilot hedge_fund --name "Scion Asset Management" --quarters 8
+python generate_report.py --pilot hedge_fund --name "Scion Asset Management" --quarters 6
 python generate_report.py --pilot congress --name "Nancy Pelosi"
 ```
 
@@ -124,4 +125,4 @@ qu'on construit au fil du temps.
 |---|---|---|
 | **Tests** | automatique (push / PR) | tests sans réseau du parsing 13F et de la vue |
 | **Mettre à jour l'archive** | quotidien 6h UTC + manuel | alimente l'archive ; options `only` et `rebuild` en manuel |
-| **Générer le rapport** | manuel | rapport statique (CSV/PNG) pour un pilote donné |
+| **Générer le rapport** | manuel | rapport PDF + CSV pour un pilote donné ; option `quarters` (3 par défaut) |

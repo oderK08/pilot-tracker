@@ -21,8 +21,8 @@ on:
       quarters:
         description: "Trimestres affichés (hedge fund uniquement)"
         type: choice
-        options: ["4", "6", "8", "12"]
-        default: "6"
+        options: ["3", "4", "6", "8"]
+        default: "3"
 
 jobs:
   generate:

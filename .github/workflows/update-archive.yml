@@ -3,7 +3,20 @@ name: Mettre à jour l'archive des pilotes suivis
 on:
   schedule:
     - cron: "0 6 * * *"   # tous les jours à 6h UTC
-  workflow_dispatch:        # permet aussi de le lancer manuellement
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Quels pilotes mettre à jour"
+        type: choice
+        options:
+          - tous
+          - hedge_fund
+          - congress
+        default: tous
+      rebuild:
+        description: "Reconstruire les archives 13F depuis zéro (hedge funds uniquement, sans risque : EDGAR conserve tout)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -23,11 +36,25 @@ jobs:
       - name: Installer les dépendances
         run: pip install -r requirements.txt
 
+      # Le run planifié (schedule) ne fournit aucune entrée : les valeurs
+      # sont alors vides et on retombe sur le comportement par défaut,
+      # c'est-à-dire tous les pilotes, sans reconstruction.
       - name: Mettre à jour l'archive
         env:
           EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-        run: python update_archive.py
+          ONLY: ${{ inputs.only }}
+          REBUILD: ${{ inputs.rebuild }}
+        run: |
+          ARGS=""
+          if [ -n "$ONLY" ] && [ "$ONLY" != "tous" ]; then
+            ARGS="$ARGS --only $ONLY"
+          fi
+          if [ "$REBUILD" = "true" ]; then
+            ARGS="$ARGS --rebuild"
+          fi
+          echo "python update_archive.py $ARGS"
+          python update_archive.py $ARGS
 
       - name: Committer l'archive mise à jour
         run: |

@@ -18,6 +18,11 @@ on:
         description: 'Nom exact (ex: "Nancy Pelosi" ou "Berkshire Hathaway")'
         required: true
         type: string
+      quarters:
+        description: "Trimestres affichés (hedge fund uniquement)"
+        type: choice
+        options: ["4", "6", "8", "12"]
+        default: "6"
 
 jobs:
   generate:
@@ -38,7 +43,11 @@ jobs:
         env:
           EDGAR_USER_AGENT: ${{ secrets.EDGAR_USER_AGENT }}
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-        run: python generate_report.py --pilot "${{ inputs.pilot_type }}" --name "${{ inputs.name }}"
+        run: |
+          python generate_report.py \
+            --pilot "${{ inputs.pilot_type }}" \
+            --name "${{ inputs.name }}" \
+            --quarters "${{ inputs.quarters }}"
 
       - name: Sauvegarder les résultats dans le repo
         run: |

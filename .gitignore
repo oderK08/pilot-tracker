@@ -6,3 +6,4 @@ venv/
 
 # ⚠️ data_archive/ n'est PAS ignoré : l'archive committée EST la donnée
 # qu'on accumule au fil du temps (voir data_sources/archive.py).
+deck-kit/deck.html

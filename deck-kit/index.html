@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deck Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@500;600&family=Libre+Baskerville:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. LA CHARTE — le seul bloc à modifier pour changer de marque
+   ============================================================ */
+:root{
+  --red:#730D1F;        /* accent principal */
+  --red-neg:#A42035;    /* valeurs négatives */
+  --black:#252525;      /* texte */
+  --pos:#343E42;        /* valeurs positives */
+  --grey-3:#778085;
+  --grey-4:#9CA9B0;
+  --grey-5:#BFC9CF;
+  --bg-1:#EFEEEA; --bg-2:#E6E5E1; --bg-3:#DCDBD5;
+
+  --f-head:'Seravek','Fira Sans',sans-serif;
+  --f-mono:'IBM Plex Mono',monospace;
+  --f-body:'Baskerville','Libre Baskerville',Georgia,serif;
+
+  /* L'UNITÉ MAGIQUE : 1% de la largeur d'une scène 16:9.
+     Toutes les tailles en dérivent -> le deck s'adapte à tout écran. */
+  --u:min(1vw,1.77778vh);
+}
+
+/* ============================================================
+   2. LE CHÂSSIS — scène 16:9, navigation, chrome
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-3);
+  font-family:var(--f-head);color:var(--black);touch-action:manipulation}
+
+.stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;overflow:hidden;
+  background:radial-gradient(130% 140% at 30% 15%,var(--bg-1) 0%,var(--bg-2) 55%,var(--bg-3) 100%)}
+
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.scene.on{opacity:1;pointer-events:auto}
+.scene svg{position:absolute;inset:0;width:100%;height:100%}
+
+.s-head{position:absolute;top:5.4%;left:3.4%;z-index:10;max-width:60%}
+h1{font-size:calc(3.3*var(--u));font-weight:800;line-height:1.05;
+  letter-spacing:.005em;text-transform:uppercase}
+.rule{width:calc(4.4*var(--u));height:calc(.32*var(--u));background:var(--red);
+  margin:calc(1.15*var(--u)) 0 calc(1*var(--u))}
+.kicker{font-size:calc(1.02*var(--u));font-weight:600;letter-spacing:.2em;
+  color:var(--red);text-transform:uppercase}
+
+/* LE PUNCH : la phrase de conclusion, cachée puis révélée */
+.punch{position:absolute;left:3.4%;bottom:9.5%;width:62%;z-index:10;
+  font-family:var(--f-body);font-size:calc(1.55*var(--u));line-height:1.45;
+  opacity:0;transform:translateY(calc(.8*var(--u)));
+  transition:opacity .8s ease,transform .8s ease}
+.punch.show{opacity:1;transform:none}
+.punch b{color:var(--red);font-weight:700}
+
+.srcline{position:absolute;left:3.4%;bottom:5.2%;font-size:calc(.72*var(--u));
+  color:var(--grey-4);letter-spacing:.04em;z-index:10}
+
+/* chrome de navigation */
+.counter{position:absolute;top:3.2%;right:3%;font-size:calc(.8*var(--u));
+  letter-spacing:.22em;color:var(--grey-3);font-weight:600;z-index:80}
+.dots{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);
+  display:flex;gap:calc(.5*var(--u));z-index:80}
+.dots span{width:calc(.52*var(--u));height:calc(.52*var(--u));border-radius:50%;
+  background:rgba(37,37,37,.22);cursor:pointer;transition:background .3s}
+.dots span.on{background:var(--red)}
+.navbtn{position:absolute;top:50%;transform:translateY(-50%);z-index:95;
+  width:44px;height:72px;display:none;align-items:center;justify-content:center;
+  border:0;border-radius:10px;cursor:pointer;background:rgba(37,37,37,.13);font-size:24px}
+#prevB{left:6px}#nextB{right:6px}
+@media (pointer:coarse){.navbtn{display:flex}.dots span{width:12px;height:12px}}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="counter" id="counter"></div>
+  <div class="dots" id="dots"></div>
+  <button class="navbtn" id="prevB">&#8249;</button>
+  <button class="navbtn" id="nextB">&#8250;</button>
+</div>
+
+<!-- ORDRE DE CHARGEMENT — c'est ça, la modularité :
+     moteur -> bibliothèque de graphiques -> slides (données seules) -> démarrage -->
+<script src="engine.js"></script>
+<script src="charts/waterfall.js"></script>
+<script src="charts/lines.js"></script>
+<script src="slides/01-cascade.js"></script>
+<script src="slides/02-courbes.js"></script>
+<script>DECK.start();</script>
+</body>
+</html>

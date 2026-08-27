@@ -1318,9 +1318,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "01609W102",
@@ -1339,9 +1339,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G81276100",
@@ -1360,9 +1360,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "649445103",
@@ -1381,9 +1381,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "98980L101",
@@ -1402,9 +1402,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "14040H105",
@@ -1423,9 +1423,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "82575P107",
@@ -1444,9 +1444,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E128",
@@ -1465,9 +1465,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "125523100",
@@ -1486,9 +1486,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "19247G107",
@@ -1507,9 +1507,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "949746101",
@@ -1528,9 +1528,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "957638109",
@@ -1549,9 +1549,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "127097103",
@@ -1570,9 +1570,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "36162J106",
@@ -1591,9 +1591,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "62955J103",
@@ -1612,9 +1612,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "25179M103",
@@ -1633,9 +1633,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "695263103",
@@ -1654,9 +1654,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "33616C100",
@@ -1675,9 +1675,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "446150104",
@@ -1696,9 +1696,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "88339P101",
@@ -1717,9 +1717,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "69047Q102",
@@ -1738,9 +1738,9 @@
     "filing_date": "2023-05-15",
     "accession": "0000905148-23-000408",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
-    "confidential_omitted": true,
-    "declared_value_total": 106935614.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "78462F103",
@@ -1759,9 +1759,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "46090E103",
@@ -1780,9 +1780,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "30212P303",
@@ -1801,9 +1801,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "16119P108",
@@ -1822,9 +1822,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "368736104",
@@ -1843,9 +1843,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "125523100",
@@ -1864,9 +1864,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "126650100",
@@ -1885,9 +1885,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "552953101",
@@ -1906,9 +1906,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "N82405106",
@@ -1927,9 +1927,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "516806205",
@@ -1948,9 +1948,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "G81276100",
@@ -1969,9 +1969,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "934423104",
@@ -1990,9 +1990,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "36162J106",
@@ -2011,9 +2011,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E128",
@@ -2032,9 +2032,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "65290C105",
@@ -2053,9 +2053,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "88339P101",
@@ -2074,9 +2074,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "Y8162K204",
@@ -2095,9 +2095,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "44952J104",
@@ -2116,9 +2116,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "65336K103",
@@ -2137,9 +2137,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "205768302",
@@ -2158,9 +2158,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "649445103",
@@ -2179,9 +2179,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "45174J509",
@@ -2200,9 +2200,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "410345102",
@@ -2221,9 +2221,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "74915M100",
@@ -2242,9 +2242,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "Y1771G102",
@@ -2263,9 +2263,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "444097109",
@@ -2284,9 +2284,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "464286582",
@@ -2305,9 +2305,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "35473P744",
@@ -2326,9 +2326,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "B38564108",
@@ -2347,9 +2347,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "46434G822",
@@ -2368,9 +2368,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "74022D407",
@@ -2389,9 +2389,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "Y7388L103",
@@ -2410,9 +2410,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "46435U374",
@@ -2431,9 +2431,9 @@
     "filing_date": "2023-08-14",
     "accession": "0000905148-23-000689",
     "form": "13F-HR",
-    "manager_name": "Scion Asset Management, LLC",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 1736760059.0
+    "declared_value_total": null
   },
   {
     "cusip": "464287523",

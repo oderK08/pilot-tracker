@@ -1822,9 +1822,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "169656105",
@@ -1843,9 +1843,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "76131D103",
@@ -1864,9 +1864,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "02079K107",
@@ -1885,9 +1885,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "44267T102",
@@ -1906,9 +1906,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "13646K108",
@@ -1927,9 +1927,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "02079K305",
@@ -1948,9 +1948,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "11271J107",
@@ -1969,9 +1969,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "654106103",
@@ -1990,9 +1990,9 @@
     "filing_date": "2024-08-14",
     "accession": "0001172661-24-003511",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
+    "manager_name": null,
     "confidential_omitted": false,
-    "declared_value_total": 10411823523.0
+    "declared_value_total": null
   },
   {
     "cusip": "11271J107",
@@ -3397,9 +3397,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "023135106",
@@ -3418,9 +3418,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "90353T100",
@@ -3439,9 +3439,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "594918104",
@@ -3460,9 +3460,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "76131D103",
@@ -3481,9 +3481,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "30303M102",
@@ -3502,9 +3502,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "44267T102",
@@ -3523,9 +3523,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "812215200",
@@ -3544,9 +3544,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "02079K107",
@@ -3565,9 +3565,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "42806J700",
@@ -3586,9 +3586,9 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "02079K305",
@@ -3607,8 +3607,8 @@
     "filing_date": "2026-05-15",
     "accession": "0001172661-26-002336",
     "form": "13F-HR",
-    "manager_name": "Pershing Square Capital Management, L.P.",
-    "confidential_omitted": true,
-    "declared_value_total": 13714299861.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   }
 ]

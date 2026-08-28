@@ -2767,9 +2767,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "060505104",
@@ -2788,9 +2788,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "025816109",
@@ -2809,9 +2809,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "166764100",
@@ -2830,9 +2830,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "191216100",
@@ -2851,9 +2851,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "500754106",
@@ -2872,9 +2872,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "615369105",
@@ -2893,9 +2893,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "674599105",
@@ -2914,9 +2914,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "902973304",
@@ -2935,9 +2935,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "00507V109",
@@ -2956,9 +2956,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "23918K108",
@@ -2977,9 +2977,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "40434L105",
@@ -2998,9 +2998,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "064058100",
@@ -3019,9 +3019,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "501044101",
@@ -3040,9 +3040,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "172967424",
@@ -3061,9 +3061,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92343E102",
@@ -3082,9 +3082,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "37045V100",
@@ -3103,9 +3103,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92556H206",
@@ -3124,9 +3124,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "16119P108",
@@ -3145,9 +3145,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229607",
@@ -3166,9 +3166,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92826C839",
@@ -3187,9 +3187,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "023135106",
@@ -3208,9 +3208,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G0403H108",
@@ -3229,9 +3229,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "57636Q104",
@@ -3250,9 +3250,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "833445109",
@@ -3271,9 +3271,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "150870103",
@@ -3292,9 +3292,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229409",
@@ -3313,9 +3313,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "58155Q103",
@@ -3334,9 +3334,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G6693N103",
@@ -3355,9 +3355,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "74967X103",
@@ -3376,9 +3376,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "872590104",
@@ -3397,9 +3397,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "37959E102",
@@ -3418,9 +3418,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "570535104",
@@ -3439,9 +3439,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229854",
@@ -3460,9 +3460,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "862121100",
@@ -3481,9 +3481,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "02005N100",
@@ -3502,9 +3502,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "339750101",
@@ -3523,9 +3523,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G85158106",
@@ -3544,9 +3544,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92343V104",
@@ -3565,9 +3565,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "571748102",
@@ -3586,9 +3586,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G7709Q104",
@@ -3607,9 +3607,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "478160104",
@@ -3628,9 +3628,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "742718109",
@@ -3649,9 +3649,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "609207105",
@@ -3670,9 +3670,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E102",
@@ -3691,9 +3691,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "922908363",
@@ -3712,9 +3712,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "78462F103",
@@ -3733,9 +3733,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "911312106",
@@ -3754,9 +3754,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E128",
@@ -3775,9 +3775,9 @@
     "filing_date": "2022-05-16",
     "accession": "0000950123-22-006442",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 363553518000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "037833100",
@@ -3796,9 +3796,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "060505104",
@@ -3817,9 +3817,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "191216100",
@@ -3838,9 +3838,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "166764100",
@@ -3859,9 +3859,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "025816109",
@@ -3880,9 +3880,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "500754106",
@@ -3901,9 +3901,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "674599105",
@@ -3922,9 +3922,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "615369105",
@@ -3943,9 +3943,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "902973304",
@@ -3964,9 +3964,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "00507V109",
@@ -3985,9 +3985,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "40434L105",
@@ -4006,9 +4006,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "064058100",
@@ -4027,9 +4027,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "23918K108",
@@ -4048,9 +4048,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "172967424",
@@ -4069,9 +4069,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "501044101",
@@ -4090,9 +4090,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92343E102",
@@ -4111,9 +4111,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92556H206",
@@ -4132,9 +4132,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "16119P108",
@@ -4153,9 +4153,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "37045V100",
@@ -4174,9 +4174,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92826C839",
@@ -4195,9 +4195,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229607",
@@ -4216,9 +4216,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "57636Q104",
@@ -4237,9 +4237,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G0403H108",
@@ -4258,9 +4258,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "023135106",
@@ -4279,9 +4279,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "150870103",
@@ -4300,9 +4300,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "58155Q103",
@@ -4321,9 +4321,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "02005N100",
@@ -4342,9 +4342,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "833445109",
@@ -4363,9 +4363,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229409",
@@ -4384,9 +4384,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "872590104",
@@ -4405,9 +4405,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "37959E102",
@@ -4426,9 +4426,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "570535104",
@@ -4447,9 +4447,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "531229854",
@@ -4468,9 +4468,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "74967X103",
@@ -4489,9 +4489,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G6693N103",
@@ -4510,9 +4510,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "339750101",
@@ -4531,9 +4531,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "862121100",
@@ -4552,9 +4552,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G85158106",
@@ -4573,9 +4573,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "571748102",
@@ -4594,9 +4594,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "478160104",
@@ -4615,9 +4615,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "742718109",
@@ -4636,9 +4636,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "609207105",
@@ -4657,9 +4657,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E102",
@@ -4678,9 +4678,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "922908363",
@@ -4699,9 +4699,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "78462F103",
@@ -4720,9 +4720,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "911312106",
@@ -4741,9 +4741,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "G9001E128",
@@ -4762,9 +4762,9 @@
     "filing_date": "2022-08-15",
     "accession": "0000950123-22-009450",
     "form": "13F-HR",
-    "manager_name": "Berkshire Hathaway Inc",
-    "confidential_omitted": true,
-    "declared_value_total": 300130772000.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "037833100",

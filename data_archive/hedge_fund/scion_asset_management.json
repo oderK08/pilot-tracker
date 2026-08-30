@@ -478,9 +478,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "539830109",
@@ -499,9 +499,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "36162J106",
@@ -520,9 +520,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "21871N101",
@@ -541,9 +541,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "67011P100",
@@ -562,9 +562,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "811292200",
@@ -583,9 +583,9 @@
     "filing_date": "2021-11-15",
     "accession": "0001567619-21-020215",
     "form": "13F-HR",
-    "manager_name": NaN,
-    "confidential_omitted": false,
-    "declared_value_total": NaN
+    "manager_name": "Scion Asset Management, LLC",
+    "confidential_omitted": true,
+    "declared_value_total": 41719000.0
   },
   {
     "cusip": "110122108",

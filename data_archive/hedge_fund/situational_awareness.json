@@ -16,9 +16,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92840M102",
@@ -37,9 +37,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "92537N108",
@@ -58,9 +58,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "87422Q109",
@@ -79,9 +79,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "21037T109",
@@ -100,9 +100,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "607828100",
@@ -121,9 +121,9 @@
     "filing_date": "2025-02-12",
     "accession": "0000935836-25-000120",
     "form": "13F-HR",
-    "manager_name": "Situational Awareness LP",
-    "confidential_omitted": true,
-    "declared_value_total": 254813765.0
+    "manager_name": null,
+    "confidential_omitted": false,
+    "declared_value_total": null
   },
   {
     "cusip": "458140100",
